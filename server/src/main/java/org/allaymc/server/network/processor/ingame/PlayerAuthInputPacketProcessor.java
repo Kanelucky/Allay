@@ -490,14 +490,16 @@ public class PlayerAuthInputPacketProcessor extends PacketProcessor<PlayerAuthIn
     }
 
     protected void updatePlayerInputState(AllayPlayer player, PlayerAuthInputPacket packet) {
+        var oldInputMode = player.getInputMode();
         var newInputMode = switch (packet.getInputMode()) {
             case UNDEFINED -> InputMode.UNDEFINED;
             case MOUSE -> InputMode.MOUSE;
             case TOUCH -> InputMode.TOUCH;
             case GAMEPAD -> InputMode.GAMEPAD;
             case MOTION_CONTROLLER -> InputMode.MOTION_CONTROLLER;
+            // COUNT is a protocol enum sentinel, not a client input mode.
+            case COUNT -> oldInputMode;
         };
-        var oldInputMode = player.getInputMode();
 
         var newPlayMode = switch (packet.getPlayMode()) {
             case NORMAL -> ClientPlayMode.NORMAL;
@@ -512,12 +514,14 @@ public class PlayerAuthInputPacketProcessor extends PacketProcessor<PlayerAuthIn
         };
         var oldPlayMode = player.getPlayMode();
 
+        var oldInteractionModel = player.getInputInteractionModel();
         var newInteractionModel = switch (packet.getInputInteractionModel()) {
             case TOUCH -> InputInteractionModel.TOUCH;
             case CROSSHAIR -> InputInteractionModel.CROSSHAIR;
             case CLASSIC -> InputInteractionModel.CLASSIC;
+            // COUNT is a protocol enum sentinel, not a client interaction model.
+            case COUNT -> oldInteractionModel;
         };
-        var oldInteractionModel = player.getInputInteractionModel();
 
         var changed = newInputMode != oldInputMode ||
                       newPlayMode != oldPlayMode ||

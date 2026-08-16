@@ -16,6 +16,8 @@ import org.allaymc.server.world.chunk.AllayChunkSection;
 import org.allaymc.server.world.chunk.ChunkEncoder;
 import org.cloudburstmc.math.vector.Vector3i;
 import org.cloudburstmc.nbt.NbtUtils;
+import org.cloudburstmc.protocol.bedrock.codec.BedrockCodec;
+import org.cloudburstmc.protocol.bedrock.codec.v2168.Bedrock_v2168;
 import org.cloudburstmc.protocol.bedrock.data.HeightMapDataType;
 import org.cloudburstmc.protocol.bedrock.data.SubChunkData;
 import org.cloudburstmc.protocol.bedrock.data.SubChunkRequestResult;
@@ -114,7 +116,7 @@ public class SubChunkRequestPacketProcessor extends PacketProcessor<SubChunkRequ
                     }
                 } else {
                     // SUCCESS_ALL_AIR or error results
-                    subChunkData.setBlobId(0);
+                    subChunkData.setBlobId(getEmptyBlobId(allayPlayer.getProtocol().getCodec()));
                     subChunkData.setData(Unpooled.EMPTY_BUFFER);
                 }
 
@@ -169,6 +171,11 @@ public class SubChunkRequestPacketProcessor extends PacketProcessor<SubChunkRequ
         ByteBuf heightMap = Unpooled.wrappedBuffer(data);
         subChunkData.setHeightMapData(heightMap);
         subChunkData.setRenderHeightMapData(heightMap.retainedDuplicate());
+    }
+
+    static Long getEmptyBlobId(BedrockCodec codec) {
+        // v2168 made the cache blob ID optional. Older serializers still require a placeholder value.
+        return codec.getProtocolVersion() >= Bedrock_v2168.CODEC.getProtocolVersion() ? null : 0L;
     }
 
     private SubChunkInfo collectSubChunkInfo(Player player, DimensionType dimensionType, Vector3i center, Vector3i offset) {

@@ -2,6 +2,8 @@ package org.allaymc.server.network.processor.common;
 
 import org.cloudburstmc.protocol.bedrock.data.HeightMapDataType;
 import org.cloudburstmc.protocol.bedrock.data.SubChunkData;
+import org.cloudburstmc.protocol.bedrock.codec.v2168.Bedrock_v2168_hotfix4;
+import org.cloudburstmc.protocol.bedrock.codec.v975.Bedrock_v975;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -35,5 +37,11 @@ class SubChunkRequestPacketProcessorTest {
         SubChunkRequestPacketProcessor.setHeightMaps(subChunkData, HeightMapDataType.NO_DATA, null);
 
         assertDoesNotThrow(() -> assertTrue(subChunkData.release()));
+    }
+
+    @Test
+    void emptyCacheBlobIdUsesTheVersionSpecificRepresentation() {
+        assertEquals(0L, SubChunkRequestPacketProcessor.getEmptyBlobId(Bedrock_v975.CODEC));
+        assertNull(SubChunkRequestPacketProcessor.getEmptyBlobId(Bedrock_v2168_hotfix4.CODEC));
     }
 }
