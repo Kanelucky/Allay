@@ -16,6 +16,8 @@ import org.cloudburstmc.protocol.bedrock.BedrockServerSession;
 import org.cloudburstmc.protocol.bedrock.codec.BedrockCodecHelper;
 import org.cloudburstmc.protocol.bedrock.codec.v818.Bedrock_v818;
 import org.cloudburstmc.protocol.bedrock.codec.v819.Bedrock_v819;
+import org.cloudburstmc.protocol.bedrock.codec.v2168.Bedrock_v2168;
+import org.cloudburstmc.protocol.bedrock.codec.v2168.Bedrock_v2168_hotfix4;
 import org.cloudburstmc.protocol.bedrock.data.PacketRecipient;
 import org.cloudburstmc.protocol.bedrock.data.definitions.BlockDefinition;
 import org.cloudburstmc.protocol.bedrock.data.definitions.ItemDefinition;
@@ -57,6 +59,7 @@ class ProtocolSessionTest {
         when(protocol.isInitialized()).thenReturn(true);
         when(protocol.createProcessorHolder()).thenReturn(holder);
         lenient().when(protocol.getCodec()).thenReturn(Bedrock_v818.CODEC);
+        lenient().when(protocol.getProtocolVersion()).thenReturn(Bedrock_v818.CODEC.getProtocolVersion());
         protocolSession = new ProtocolSession(protocol, bedrockSession);
     }
 
@@ -308,6 +311,78 @@ class ProtocolSessionTest {
         order.verify(installedHelper).setItemDefinitions(selectedItems);
         order.verify(installedHelper).setBlockDefinitions(selectedBlocks);
         verify(bedrockSession).setCodec(Bedrock_v818.CODEC);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void switchesTransportCodecWithoutReplacingProtocolStateBeforeLoginCompletes() {
+        var peer = mock(BedrockPeer.class);
+        var bootstrapHelper = mock(BedrockCodecHelper.class);
+        var hotfixHelper = mock(BedrockCodecHelper.class);
+        var baseHelper = mock(BedrockCodecHelper.class);
+        var bootstrapItems = (DefinitionRegistry<ItemDefinition>) mock(DefinitionRegistry.class);
+        var bootstrapBlocks = (DefinitionRegistry<BlockDefinition>) mock(DefinitionRegistry.class);
+        var selectedItems = (DefinitionRegistry<ItemDefinition>) mock(DefinitionRegistry.class);
+        var selectedBlocks = (DefinitionRegistry<BlockDefinition>) mock(DefinitionRegistry.class);
+
+        when(protocol.getCodec()).thenReturn(Bedrock_v2168_hotfix4.CODEC);
+        when(protocol.getProtocolVersion()).thenReturn(Bedrock_v2168.CODEC.getProtocolVersion());
+        when(protocol.getItemDefinitionRegistry()).thenReturn(selectedItems);
+        when(protocol.getBlockDefinitionRegistry()).thenReturn(selectedBlocks);
+        when(bedrockSession.getCodec()).thenReturn(
+                Bedrock_v819.CODEC,
+                Bedrock_v2168_hotfix4.CODEC,
+                Bedrock_v2168_hotfix4.CODEC
+        );
+        when(bedrockSession.getPeer()).thenReturn(peer);
+        when(peer.getCodecHelper()).thenReturn(bootstrapHelper, hotfixHelper, hotfixHelper, baseHelper);
+        when(bootstrapHelper.getItemDefinitions()).thenReturn(bootstrapItems);
+        when(bootstrapHelper.getBlockDefinitions()).thenReturn(bootstrapBlocks);
+        when(hotfixHelper.getItemDefinitions()).thenReturn(selectedItems);
+        when(hotfixHelper.getBlockDefinitions()).thenReturn(selectedBlocks);
+
+        var originalHolder = protocolSession.getProcessorHolder();
+        protocolSession.installCodec();
+        protocolSession.switchCodec(Bedrock_v2168.CODEC);
+
+        assertSame(protocol, protocolSession.getProtocol());
+        assertSame(originalHolder, protocolSession.getProcessorHolder());
+        assertEquals(ClientState.CONNECTED, protocolSession.getClientState());
+
+        var order = inOrder(bedrockSession, hotfixHelper, baseHelper);
+        order.verify(bedrockSession).setCodec(Bedrock_v2168_hotfix4.CODEC);
+        order.verify(hotfixHelper).setItemDefinitions(selectedItems);
+        order.verify(hotfixHelper).setBlockDefinitions(selectedBlocks);
+        order.verify(bedrockSession).setCodec(Bedrock_v2168.CODEC);
+        order.verify(baseHelper).setItemDefinitions(selectedItems);
+        order.verify(baseHelper).setBlockDefinitions(selectedBlocks);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void refusesTransportCodecSwitchAfterLoginStateHasAdvanced() {
+        var peer = mock(BedrockPeer.class);
+        var bootstrapHelper = mock(BedrockCodecHelper.class);
+        var installedHelper = mock(BedrockCodecHelper.class);
+        var items = (DefinitionRegistry<ItemDefinition>) mock(DefinitionRegistry.class);
+        var blocks = (DefinitionRegistry<BlockDefinition>) mock(DefinitionRegistry.class);
+
+        when(protocol.getCodec()).thenReturn(Bedrock_v2168_hotfix4.CODEC);
+        when(protocol.getProtocolVersion()).thenReturn(Bedrock_v2168.CODEC.getProtocolVersion());
+        when(bedrockSession.getCodec()).thenReturn(Bedrock_v819.CODEC);
+        when(bedrockSession.getPeer()).thenReturn(peer);
+        when(peer.getCodecHelper()).thenReturn(bootstrapHelper, installedHelper);
+        when(bootstrapHelper.getItemDefinitions()).thenReturn(items);
+        when(bootstrapHelper.getBlockDefinitions()).thenReturn(blocks);
+        when(protocol.getItemDefinitionRegistry()).thenReturn(items);
+        when(protocol.getBlockDefinitionRegistry()).thenReturn(blocks);
+
+        protocolSession.installCodec();
+        assertTrue(protocolSession.setClientState(ClientState.LOGGED_IN));
+
+        assertThrows(IllegalStateException.class, () -> protocolSession.switchCodec(Bedrock_v2168.CODEC));
+        assertSame(protocol, protocolSession.getProtocol());
+        verify(bedrockSession, never()).setCodec(Bedrock_v2168.CODEC);
     }
 
     @Test

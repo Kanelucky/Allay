@@ -92,6 +92,7 @@ import org.allaymc.server.network.protocol.Protocol;
 import org.allaymc.server.network.protocol.ProtocolSession;
 import org.allaymc.server.world.AllayDimension;
 import org.cloudburstmc.protocol.bedrock.BedrockServerSession;
+import org.cloudburstmc.protocol.bedrock.codec.BedrockCodec;
 import org.cloudburstmc.protocol.bedrock.data.Ability;
 import org.cloudburstmc.protocol.bedrock.data.AttributeData;
 import org.cloudburstmc.protocol.bedrock.data.PlayerPermission;
@@ -1463,6 +1464,24 @@ public class AllayPlayer implements Player {
             var selectedSession = new ProtocolSession(protocol, session);
             selectedSession.installCodec();
             protocolSession = selectedSession;
+            return true;
+        }
+    }
+
+    /**
+     * Switches the transport codec for the negotiated protocol before login completes.
+     *
+     * @param codec the replacement codec with the same wire protocol version
+     * @return {@code true} if the codec is active, or {@code false} if the connection closed
+     */
+    public boolean switchProtocolCodec(BedrockCodec codec) {
+        Objects.requireNonNull(codec, "codec");
+        synchronized (protocolLifecycleLock) {
+            var selectedSession = protocolSession;
+            if (selectedSession == null || !session.isConnected()) {
+                return false;
+            }
+            selectedSession.switchCodec(codec);
             return true;
         }
     }
