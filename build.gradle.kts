@@ -38,6 +38,7 @@ subprojects {
 
     repositories {
         mavenCentral()
+        maven("https://jitpack.io")
         maven("https://www.jetbrains.com/intellij-repository/releases/")
         maven("https://repo.opencollab.dev/maven-releases/")
         maven("https://repo.opencollab.dev/maven-snapshots/")
