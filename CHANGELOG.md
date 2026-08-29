@@ -35,6 +35,7 @@ Unless otherwise specified, any version comparison below is the comparison of th
 - (API) Added `GoatHornInstrument` and goat horn instrument accessors, alongside full goat horn use behavior.
 - Implemented bubble columns from soul sand and magma blocks, including entity movement and water-state handling.
 - Added support for MCBE 1.26.30 (protocol v1001), including the new cinnabar and sulfur blocks/items and sulfur cube entity.
+- Added support for MCBE 1.26.45 (protocol v2169), not including the lastest features
 - Added dashboard console command completion backed by the command tree, including command names, aliases, enum values, and online player targets.
 - Added clickable `http://` and `https://` links in dashboard console logs.
 
