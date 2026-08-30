@@ -10,6 +10,8 @@ Unless otherwise specified, any version comparison below is the comparison of th
 
 # Fork changes
 
+<small>[Compare with original Allay](https://github.com/AllayMC/Allay/compare/master...Kanelucky:Allay:develop)<small>
+
 - (API) Added support for custom game modes (`GameMode`). Use `GameMode.builder()` to create a custom game mode.
 - Added support for MCBE 1.26.45 (protocol v2169), not including the lastest features
 
