@@ -915,9 +915,10 @@ public final class EntityTypeInitializer {
         }
 
         if (target instanceof EntityPlayer player) {
-            return switch (player.getGameMode()) {
-                case SURVIVAL, ADVENTURE -> true;
-                case CREATIVE, SPECTATOR -> false;
+            return switch (player.getGameMode().getVanillaGameMode().getId()) {
+                case 0, 2 -> true;   // SURVIVAL, ADVENTURE
+                case 1, 3 -> false;  // CREATIVE, SPECTATOR
+                default -> true;
             };
         }
 

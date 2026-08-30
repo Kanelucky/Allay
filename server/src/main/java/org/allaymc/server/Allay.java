@@ -72,65 +72,63 @@ public final class Allay {
     private static boolean initialized;
 
     public static void main(String[] args) throws InterruptedException {
-        long initialTime = System.currentTimeMillis();
-        if (GitProperties.isDevBuild() && !AllayServer.getSettings().genericSettings().forceEnableSentry()) {
-            // Enable sentry only in non-dev build
-            Sentry.close();
-        }
-        ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.DISABLED);
-        // Disable scientific notation in joml
-        System.setProperty("joml.format", "false");
-        // Enable async logging
-        System.setProperty("log4j2.contextSelector", AsyncLoggerContextSelector.class.getName());
-        System.setProperty("bedrock.maxDecompressedBytes", String.valueOf(AllayServer.getSettings().networkSettings().maxDecompressedBytes()));
+        try {
+            long initialTime = System.currentTimeMillis();
+            if (GitProperties.isDevBuild() && !AllayServer.getSettings().genericSettings().forceEnableSentry()) {
+                Sentry.close();
+            }
+            ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.DISABLED);
+            System.setProperty("joml.format", "false");
+            System.setProperty("log4j2.contextSelector", AsyncLoggerContextSelector.class.getName());
+            System.setProperty("bedrock.maxDecompressedBytes", String.valueOf(AllayServer.getSettings().networkSettings().maxDecompressedBytes()));
 
-        initI18n();
-        EXTENSION_MANAGER.loadExtensions(args);
+            initI18n();
+            EXTENSION_MANAGER.loadExtensions(args);
 
-        // Check if the environment is headless
-        if (isHeadless()) {
-            AllayServer.getSettings().genericSettings().enableGui(false);
-        }
-        if (AllayServer.getSettings().genericSettings().enableGui()) {
-            try {
-                DASHBOARD = Dashboard.getInstance();
-            } catch (Throwable t) {
-                log.error("Cannot init Dashboard!", t);
+            if (isHeadless()) {
                 AllayServer.getSettings().genericSettings().enableGui(false);
             }
-        }
-
-        log.info(I18n.get().tr(TrKeys.ALLAY_SERVER_STARTING));
-
-        try {
-            initAllay();
-        } catch (Exception e) {
-            log.error("Cannot init Allay API!", e);
-            if (DASHBOARD != null) {
-                sleep(5000);
+            if (AllayServer.getSettings().genericSettings().enableGui()) {
+                try {
+                    DASHBOARD = Dashboard.getInstance();
+                } catch (Throwable t) {
+                    log.error("Cannot init Dashboard!", t);
+                    AllayServer.getSettings().genericSettings().enableGui(false);
+                }
             }
-            LogManager.shutdown();
-            System.exit(1);
-        }
 
-        try {
-            ((AllayServer) Server.getInstance()).start(initialTime);
+            log.info(I18n.get().tr(TrKeys.ALLAY_SERVER_STARTING));
+
+            try {
+                initAllay();
+            } catch (Throwable e) {
+                log.error("Cannot init Allay API!", e);
+                e.printStackTrace();
+                if (DASHBOARD != null) {
+                    sleep(5000);
+                }
+                LogManager.shutdown();
+                System.exit(1);
+            }
+
+            try {
+                ((AllayServer) Server.getInstance()).start(initialTime);
+            } catch (Throwable t) {
+                log.error("Error while starting the server!", t);
+                if (DASHBOARD != null) {
+                    sleep(5000);
+                }
+                LogManager.shutdown();
+                System.exit(1);
+            }
+
+            log.info(I18n.get().tr(TrKeys.ALLAY_SERVER_STOPPED));
+            LogManager.shutdown();
+            System.exit(0);
         } catch (Throwable t) {
-            log.error("Error while starting the server!", t);
-            // The server may not be initialized correctly, so we can't call Server::shutdown()
-            // to stop the server
-            if (DASHBOARD != null) {
-                sleep(5000);
-            }
-            LogManager.shutdown();
+            t.printStackTrace();
             System.exit(1);
         }
-
-        log.info(I18n.get().tr(TrKeys.ALLAY_SERVER_STOPPED));
-        // Server has been shutdown
-        // Call System.exit(0) to stop other non-daemon threads
-        LogManager.shutdown();
-        System.exit(0);
     }
 
     private static boolean isHeadless() {

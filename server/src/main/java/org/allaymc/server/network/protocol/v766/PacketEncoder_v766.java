@@ -2540,10 +2540,10 @@ public class PacketEncoder_v766 extends PacketEncoder {
         packet.getGamerules().addAll(NetworkHelper.toNetwork(worldData.getGameRules().getGameRules()));
         packet.setUniqueEntityId(player.getUniqueId().getLeastSignificantBits());
         packet.setRuntimeEntityId(player.getRuntimeId());
-        packet.setPlayerGameType(GameType.from(playerData.getNbt().getInt(
+        packet.setPlayerGameType(NetworkHelper.toNetwork(NetworkHelper.fromNetwork(GameType.from(playerData.getNbt().getInt(
                 "PlayerGameMode",
                 NetworkHelper.toNetwork(worldData.getGameMode()).ordinal()
-        )));
+        )))));
 
         var location = player.getLocation();
         var worldSpawn = worldData.getSpawnPoint();

@@ -2,8 +2,12 @@ package org.allaymc.server.utils;
 
 import com.google.common.base.Preconditions;
 import eu.okaeri.configs.OkaeriConfigInitializer;
+import eu.okaeri.configs.schema.GenericsPair;
+import eu.okaeri.configs.serdes.BidirectionalTransformer;
+import eu.okaeri.configs.serdes.SerdesContext;
 import eu.okaeri.configs.yaml.snakeyaml.YamlSnakeYamlConfigurer;
 import lombok.experimental.UtilityClass;
+import org.allaymc.api.player.GameMode;
 import org.allaymc.api.plugin.PluginDescriptor;
 import org.semver4j.Semver;
 
@@ -72,16 +76,34 @@ public class Utils {
      */
     public static OkaeriConfigInitializer createConfigInitializer(Path path) {
         return it -> {
-            // Specify configurer implementation, optionally additional serdes packages
-            it.withConfigurer(new YamlSnakeYamlConfigurer());
-            // Specify Path, File or pathname
+            it.withConfigurer(new YamlSnakeYamlConfigurer(), registry -> registry.register(new GameModeTransformer()));
             it.withBindFile(path);
-            // Automatic removal of undeclared keys
             it.withRemoveOrphans(true);
-            // Save the file if it does not exist
             it.saveDefaults();
-            // Load and save to update comments/new fields
             it.load(true);
         };
+    }
+
+    private static class GameModeTransformer extends BidirectionalTransformer<String, GameMode> {
+        @Override
+        public GenericsPair<String, GameMode> getPair() {
+            return this.genericsPair(String.class, GameMode.class);
+        }
+
+        @Override
+        public GameMode leftToRight(String data, SerdesContext serdesContext) {
+            return switch (data.toUpperCase()) {
+                case "SURVIVAL" -> GameMode.SURVIVAL;
+                case "CREATIVE" -> GameMode.CREATIVE;
+                case "ADVENTURE" -> GameMode.ADVENTURE;
+                case "SPECTATOR" -> GameMode.SPECTATOR;
+                default -> throw new IllegalArgumentException("Unknown game mode: " + data);
+            };
+        }
+
+        @Override
+        public String rightToLeft(GameMode data, SerdesContext serdesContext) {
+            return data.getName().toUpperCase();
+        }
     }
 }

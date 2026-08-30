@@ -50,6 +50,10 @@ import org.allaymc.api.message.TrKeys;
 import org.allaymc.api.permission.OpPermissionCalculator;
 import org.allaymc.api.permission.Permissions;
 import org.allaymc.api.player.*;
+import org.allaymc.api.player.ClientPlayMode;
+import org.allaymc.api.player.HudElement;
+import org.allaymc.api.player.InputInteractionModel;
+import org.allaymc.api.player.InputMode;
 import org.allaymc.api.primitiveshape.PrimitiveShape;
 import org.allaymc.api.registry.Registries;
 import org.allaymc.api.scoreboard.Scoreboard;
@@ -93,10 +97,7 @@ import org.allaymc.server.network.protocol.ProtocolSession;
 import org.allaymc.server.world.AllayDimension;
 import org.cloudburstmc.protocol.bedrock.BedrockServerSession;
 import org.cloudburstmc.protocol.bedrock.codec.BedrockCodec;
-import org.cloudburstmc.protocol.bedrock.data.Ability;
-import org.cloudburstmc.protocol.bedrock.data.AttributeData;
-import org.cloudburstmc.protocol.bedrock.data.PlayerPermission;
-import org.cloudburstmc.protocol.bedrock.data.ScoreInfo;
+import org.cloudburstmc.protocol.bedrock.data.*;
 import org.cloudburstmc.protocol.bedrock.data.command.*;
 import org.cloudburstmc.protocol.bedrock.data.entity.EntityDataMap;
 import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerSlotType;
@@ -1995,7 +1996,9 @@ public class AllayPlayer implements Player {
             var permissionName = AllayServer.getSettings().genericSettings().defaultPermission().toUpperCase();
             this.abilities.addAll(abilitiesFromPermission(PlayerPermission.valueOf(permissionName)));
 
-            var gameMode = GameMode.from(playerData.getNbt().getInt("PlayerGameMode", NetworkHelper.toNetwork(dimension.getWorld().getWorldData().getGameMode()).ordinal()));
+            int gameModeId = playerData.getNbt().getInt("PlayerGameMode", NetworkHelper.toNetwork(dimension.getWorld().getWorldData().getGameMode()).ordinal());
+            GameType gameType = GameType.from(gameModeId);
+            GameMode gameMode = NetworkHelper.fromNetwork(gameType);
             this.abilities.addAll(gameMode.getAbilities());
         } else {
             this.abilities.addAll(storedAbilities);
