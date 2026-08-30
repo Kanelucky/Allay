@@ -128,7 +128,7 @@ public class ParseUtils {
             case "c", "creative", "1" -> 1;
             case "a", "adventure", "2" -> 2;
             case "spectator", "6" -> 6;
-            case "d", "default" -> AllayServer.getSettings().genericSettings().defaultGameMode().ordinal();
+            case "d", "default" -> AllayServer.getSettings().genericSettings().defaultGameMode().getId();
             default -> throw new SelectorSyntaxException("Unknown GameMode token: " + token);
         };
     }

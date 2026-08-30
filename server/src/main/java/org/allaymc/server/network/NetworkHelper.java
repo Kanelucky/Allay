@@ -303,11 +303,12 @@ public final class NetworkHelper {
     }
 
     public static GameType toNetwork(GameMode gameMode) {
-        return switch (gameMode) {
-            case SURVIVAL -> GameType.SURVIVAL;
-            case CREATIVE -> GameType.CREATIVE;
-            case ADVENTURE -> GameType.ADVENTURE;
-            case SPECTATOR -> GameType.SPECTATOR;
+        return switch (gameMode.getVanillaGameMode().getId()) {
+            case 0 -> GameType.SURVIVAL;
+            case 1 -> GameType.CREATIVE;
+            case 2 -> GameType.ADVENTURE;
+            case 3 -> GameType.SPECTATOR;
+            default -> throw new IllegalArgumentException("Unknown vanilla game mode: " + gameMode.getVanillaGameMode().getName());
         };
     }
 

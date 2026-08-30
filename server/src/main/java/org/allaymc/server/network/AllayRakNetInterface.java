@@ -184,7 +184,7 @@ public class AllayRakNetInterface extends AllayNetworkInterface {
                 .subMotd(genericSettings.subMotd())
                 .playerCount(0)
                 .maximumPlayerCount(genericSettings.maxPlayerCount())
-                .gameType(genericSettings.defaultGameMode().name())
+                .gameType(genericSettings.defaultGameMode().getName())
                 .nintendoLimited(false)
                 .version(ProtocolInfo.getLatestCodec().getMinecraftVersion())
                 .protocolVersion(ProtocolInfo.getLatestCodec().getProtocolVersion())
