@@ -8,6 +8,11 @@ Each release is associated with a specific API version, and any changes to API w
 
 Unless otherwise specified, any version comparison below is the comparison of the server version, not the API version.
 
+# Fork changes
+
+- (API) Added support for custom game modes (`GameMode`). Use `GameMode.builder()` to create a custom game mode.
+- Added support for MCBE 1.26.45 (protocol v2169), not including the lastest features
+
 # 0.14.1 (API 0.30.0) - Unreleased
 
 <small>[Compare with 0.14.0](https://github.com/AllayMC/Allay/compare/0.14.0...HEAD)</small>
@@ -35,7 +40,6 @@ Unless otherwise specified, any version comparison below is the comparison of th
 - (API) Added `GoatHornInstrument` and goat horn instrument accessors, alongside full goat horn use behavior.
 - Implemented bubble columns from soul sand and magma blocks, including entity movement and water-state handling.
 - Added support for MCBE 1.26.30 (protocol v1001), including the new cinnabar and sulfur blocks/items and sulfur cube entity.
-- Added support for MCBE 1.26.45 (protocol v2169), not including the lastest features
 - Added dashboard console command completion backed by the command tree, including command names, aliases, enum values, and online player targets.
 - Added clickable `http://` and `https://` links in dashboard console logs.
 
