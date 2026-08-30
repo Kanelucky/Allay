@@ -76,12 +76,10 @@ public class Utils {
      */
     public static OkaeriConfigInitializer createConfigInitializer(Path path) {
         return it -> {
-            it.withConfigurer(new YamlSnakeYamlConfigurer());
+            it.withConfigurer(new YamlSnakeYamlConfigurer(), registry -> registry.register(new GameModeTransformer()));
             it.withBindFile(path);
             it.withRemoveOrphans(true);
             it.saveDefaults();
-            // Register custom String <-> GameMode transformer
-            it.withSerdesPack(registry -> registry.register(new GameModeTransformer()));
             it.load(true);
         };
     }
