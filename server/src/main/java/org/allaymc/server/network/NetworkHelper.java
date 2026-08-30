@@ -318,7 +318,9 @@ public final class NetworkHelper {
             case CREATIVE -> GameMode.CREATIVE;
             case ADVENTURE -> GameMode.ADVENTURE;
             case SPECTATOR -> GameMode.SPECTATOR;
-            default -> null;
+            case SURVIVAL_VIEWER -> GameMode.SPECTATOR;
+            case CREATIVE_VIEWER -> GameMode.SPECTATOR;
+            case DEFAULT -> GameMode.SURVIVAL;
         };
     }
 
