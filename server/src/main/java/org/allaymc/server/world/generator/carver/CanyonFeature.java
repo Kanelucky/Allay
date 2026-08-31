@@ -4,6 +4,7 @@ import org.allaymc.api.world.chunk.UnsafeChunk;
 
 import java.util.Random;
 
+import static org.allaymc.server.world.generator.OverworldNoiser.DEEPSLATE_LEVEL_INTERNAL;
 import static org.allaymc.server.world.generator.OverworldNoiser.GEN_DEPTH;
 
 public final class CanyonFeature extends LargeFeature {
@@ -16,7 +17,7 @@ public final class CanyonFeature extends LargeFeature {
         }
 
         double xCave = startChunkX * 16.0 + random.nextInt(16);
-        double yCave = random.nextInt(random.nextInt(40) + 8) + 20;
+        double yCave = DEEPSLATE_LEVEL_INTERNAL + random.nextInt(random.nextInt(40) + 8) + 20;
         double zCave = startChunkZ * 16.0 + random.nextInt(16);
         float yRot = random.nextFloat() * (float) Math.PI * 2.0f;
         float xRot = ((random.nextFloat() - 0.5f) * 2.0f) / 8.0f;
@@ -118,7 +119,7 @@ public final class CanyonFeature extends LargeFeature {
 
             int x0 = Math.max(0, floor(xCave - rad) - chunkX * 16 - 1);
             int x1 = Math.min(16, floor(xCave + rad) - chunkX * 16 + 1);
-            int y0 = Math.max(1, floor(yCave - yRad) - 1);
+            int y0 = Math.max(DEEPSLATE_LEVEL_INTERNAL, floor(yCave - yRad) - 1);
             int y1 = Math.min(GEN_DEPTH - 8, floor(yCave + yRad) + 1);
             int z0 = Math.max(0, floor(zCave - rad) - chunkZ * 16 - 1);
             int z1 = Math.min(16, floor(zCave + rad) - chunkZ * 16 + 1);

@@ -7,6 +7,7 @@ import org.allaymc.api.world.chunk.UnsafeChunk;
 import java.util.Random;
 
 import static org.allaymc.server.world.generator.OverworldNoiser.GEN_DEPTH;
+import static org.allaymc.server.world.generator.OverworldNoiser.MIN_Y;
 
 abstract class LargeFeature {
     protected final int caveRadius = 8;
@@ -46,7 +47,7 @@ abstract class LargeFeature {
                     if (yy < 0 || yy >= GEN_DEPTH) {
                         continue;
                     }
-                    BlockState block = chunk.getBlockState(xx, yy, zz);
+                    BlockState block = chunk.getBlockState(xx, yy + MIN_Y, zz);
                     if (block.getBlockType() == BlockTypes.WATER) {
                         return true;
                     }
@@ -90,21 +91,24 @@ abstract class LargeFeature {
                     double test =
                             canyon ? ((xd * xd + zd * zd) * rs[yy] + (yd * yd / 6.0)) : (xd * xd + yd * yd + zd * zd);
                     if ((!canyon && yd > -0.7 && test < 1.0) || (canyon && test < 1.0)) {
-                        BlockState block = chunk.getBlockState(xx, yy, zz);
+                        BlockState block = chunk.getBlockState(xx, yy + MIN_Y, zz);
                         if (block.getBlockType() == BlockTypes.GRASS_BLOCK) {
                             hasGrass = true;
                         }
                         if (block.getBlockType() == BlockTypes.STONE
+                                || block.getBlockType() == BlockTypes.DEEPSLATE
                                 || block.getBlockType() == BlockTypes.DIRT
                                 || block.getBlockType() == BlockTypes.GRASS_BLOCK) {
                             if (yy < 10) {
-                                chunk.setBlockState(xx, yy, zz, BlockTypes.LAVA.getDefaultState());
+                                chunk.setBlockState(xx, yy + MIN_Y, zz, BlockTypes.LAVA.getDefaultState());
                             } else {
-                                chunk.setBlockState(xx, yy, zz, BlockTypes.AIR.getDefaultState());
+                                chunk.setBlockState(xx, yy + MIN_Y, zz, BlockTypes.AIR.getDefaultState());
                                 if (hasGrass
                                         && yy > 0
-                                        && chunk.getBlockState(xx, yy - 1, zz).getBlockType() == BlockTypes.DIRT) {
-                                    chunk.setBlockState(xx, yy - 1, zz, BlockTypes.DIRT.getDefaultState());
+                                        && chunk.getBlockState(xx, yy - 1 + MIN_Y, zz)
+                                                        .getBlockType()
+                                                == BlockTypes.DIRT) {
+                                    chunk.setBlockState(xx, yy - 1 + MIN_Y, zz, BlockTypes.DIRT.getDefaultState());
                                 }
                             }
                         }

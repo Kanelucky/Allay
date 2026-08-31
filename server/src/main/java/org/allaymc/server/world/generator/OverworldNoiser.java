@@ -18,10 +18,14 @@ import java.util.Random;
  */
 public class OverworldNoiser implements Noiser {
 
+    public static final int MIN_Y = -64;
+    public static final int MAX_Y = 127;
+    public static final int GEN_DEPTH = MAX_Y - MIN_Y + 1;
     private static final int SEA_LEVEL = 62;
+    private static final int SEA_LEVEL_INTERNAL = SEA_LEVEL - MIN_Y;
+    public static final int DEEPSLATE_LEVEL_INTERNAL = 0 - MIN_Y;
     private static final int CHUNK_WIDTH = 4;
     private static final int CHUNK_HEIGHT = 8;
-    public static final int GEN_DEPTH = 128;
     private static final Random random = new Random();
     private float[] pows;
     private final PerlinNoise lperlinNoise1 = new PerlinNoise(random, 16);
@@ -53,8 +57,7 @@ public class OverworldNoiser implements Noiser {
                 try {
                     switch (key) {
                         case "seed" -> seed = Long.parseLong(value);
-                        default -> {
-                        }
+                        default -> {}
                     }
                 } catch (NumberFormatException ignored) {
                 }
@@ -125,13 +128,16 @@ public class OverworldNoiser implements Noiser {
                             for (int z = 0; z < CHUNK_WIDTH; z++) {
                                 value += valueStep;
                                 BlockState block = BlockTypes.AIR.getDefaultState();
-                                int worldY = yc * CHUNK_HEIGHT + y;
+                                int internalY = yc * CHUNK_HEIGHT + y;
                                 if (value > 0.0) {
-                                    block = BlockTypes.STONE.getDefaultState();
-                                } else if (worldY < SEA_LEVEL) {
+                                    block = internalY < DEEPSLATE_LEVEL_INTERNAL
+                                            ? BlockTypes.DEEPSLATE.getDefaultState()
+                                            : BlockTypes.STONE.getDefaultState();
+                                } else if (internalY < SEA_LEVEL_INTERNAL) {
                                     block = BlockTypes.WATER.getDefaultState();
                                 }
-                                chunk.setBlockState(x + xc * CHUNK_WIDTH, worldY, z + zc * CHUNK_WIDTH, block);
+                                chunk.setBlockState(
+                                        x + xc * CHUNK_WIDTH, internalY + MIN_Y, z + zc * CHUNK_WIDTH, block);
                             }
                             currentS0 += currentS0a;
                             currentS1 += currentS1a;
@@ -156,6 +162,7 @@ public class OverworldNoiser implements Noiser {
         BlockState grass = BlockTypes.GRASS_BLOCK.getDefaultState();
         BlockState dirt = BlockTypes.DIRT.getDefaultState();
         BlockState stone = BlockTypes.STONE.getDefaultState();
+        BlockState deepslate = BlockTypes.DEEPSLATE.getDefaultState();
         BlockState air = BlockTypes.AIR.getDefaultState();
 
         for (int x = 0; x < 16; x++) {
@@ -163,24 +170,25 @@ public class OverworldNoiser implements Noiser {
                 int runDepth = (int) (depthBuffer[x + z * 16] / 3.0 + 3.0 + random.nextDouble() * 0.25);
                 int run = -1;
                 for (int y = GEN_DEPTH - 1; y >= 0; y--) {
+                    int actualY = y + MIN_Y;
                     if (y <= 1 + random.nextInt(2)) {
-                        chunk.setBlockState(x, y, z, BlockTypes.BEDROCK.getDefaultState());
+                        chunk.setBlockState(x, actualY, z, BlockTypes.BEDROCK.getDefaultState());
                         continue;
                     }
-                    BlockState old = chunk.getBlockState(x, y, z);
+                    BlockState old = chunk.getBlockState(x, actualY, z);
                     if (old == air) {
                         run = -1;
-                    } else if (old == stone) {
+                    } else if (old == stone || old == deepslate) {
                         if (run == -1) {
                             if (runDepth <= 0) {
                                 run = 0;
                             } else {
                                 run = runDepth;
-                                chunk.setBlockState(x, y, z, grass);
+                                chunk.setBlockState(x, actualY, z, grass);
                             }
                         } else if (run > 0) {
                             run--;
-                            chunk.setBlockState(x, y, z, dirt);
+                            chunk.setBlockState(x, actualY, z, dirt);
                         }
                     }
                 }
