@@ -33,12 +33,7 @@ public class TargetNode extends BaseNode {
                 return false;
             }
         } else {
-            var player = Server.getInstance().getPlayerManager().getPlayers()
-                               .values()
-                               .stream()
-                               .filter(p -> p.getOriginName().equalsIgnoreCase(token))
-                               .findFirst()
-                               .orElse(null);
+            var player = Server.getInstance().getPlayerManager().getPlayerByName(token);
             if (player != null) {
                 entities = Lists.newArrayList(player.getControlledEntity());
             } else {
