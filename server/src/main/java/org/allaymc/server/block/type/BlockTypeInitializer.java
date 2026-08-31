@@ -37,10 +37,7 @@ import org.allaymc.server.block.component.door.BlockDoorBaseComponentImpl;
 import org.allaymc.server.block.component.door.BlockIronDoorBaseComponentImpl;
 import org.allaymc.server.block.component.dripleaf.BlockBigDripleafBaseComponentImpl;
 import org.allaymc.server.block.component.dripleaf.BlockSmallDripleafBaseComponentImpl;
-import org.allaymc.server.block.component.fallable.BlockAnvilFallableComponentImpl;
-import org.allaymc.server.block.component.fallable.BlockConcretePowderFallableComponentImpl;
-import org.allaymc.server.block.component.fallable.BlockFallableComponentImpl;
-import org.allaymc.server.block.component.fallable.BlockPointedDripstoneFallableComponentImpl;
+import org.allaymc.server.block.component.fallable.*;
 import org.allaymc.server.block.component.fire.BlockFireBaseComponentImpl;
 import org.allaymc.server.block.component.fire.BlockSoulFireBaseComponentImpl;
 import org.allaymc.server.block.component.flower.BlockBigFlowerBaseComponentImpl;
@@ -357,6 +354,20 @@ public final class BlockTypeInitializer {
                 .builder(BlockRedSandBehaviorImpl.class)
                 .vanillaBlock(BlockId.RED_SAND)
                 .addComponent(new BlockFallableComponentImpl(SoundNames.LAND_SAND))
+                .build();
+        BlockTypes.SUSPICIOUS_SAND = AllayBlockType
+                .builder(BlockSuspiciousSandBehaviorImpl.class)
+                .vanillaBlock(BlockId.SUSPICIOUS_SAND)
+                .setProperties(BlockPropertyTypes.BRUSHED_PROGRESS, BlockPropertyTypes.HANGING)
+                .setBaseComponentSupplier(BlockSuspiciousBaseComponentImpl::new)
+                .addComponent(new BlockSuspiciousFallableComponentImpl(SoundNames.BREAK_SUSPICIOUS_SAND))
+                .build();
+        BlockTypes.SUSPICIOUS_GRAVEL = AllayBlockType
+                .builder(BlockSuspiciousGravelBehaviorImpl.class)
+                .vanillaBlock(BlockId.SUSPICIOUS_GRAVEL)
+                .setProperties(BlockPropertyTypes.BRUSHED_PROGRESS, BlockPropertyTypes.HANGING)
+                .setBaseComponentSupplier(BlockSuspiciousBaseComponentImpl::new)
+                .addComponent(new BlockSuspiciousFallableComponentImpl(SoundNames.BREAK_SUSPICIOUS_GRAVEL))
                 .build();
     }
 
