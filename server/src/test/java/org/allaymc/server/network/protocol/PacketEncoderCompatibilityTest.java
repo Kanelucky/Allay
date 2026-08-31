@@ -629,7 +629,7 @@ class PacketEncoderCompatibilityTest {
         when(player.getLocation()).thenReturn(new Location3d(1.25, 64.5, -3.5, 15, 30, dimension));
 
         var playerData = PlayerData.builder()
-                .nbt(NbtMap.builder().putInt("PlayerGameMode", GameMode.CREATIVE.ordinal()).build())
+                .nbt(NbtMap.builder().putInt("PlayerGameMode", GameMode.CREATIVE.getId()).build())
                 .build();
         return new StartGameFixture(world, playerData, dimension, player, uniqueId, runtimeId);
     }
