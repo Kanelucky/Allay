@@ -9,6 +9,7 @@ import org.allaymc.api.block.type.BlockType;
 import org.allaymc.api.blockentity.component.BlockEntityDecoratedPotBaseComponent;
 import org.allaymc.api.blockentity.interfaces.BlockEntityDecoratedPot;
 import org.allaymc.api.entity.Entity;
+import org.allaymc.api.item.ItemHelper;
 import org.allaymc.api.item.ItemStack;
 import org.allaymc.api.item.type.ItemTypes;
 import org.allaymc.api.player.GameMode;
@@ -83,6 +84,9 @@ public class BlockDecoratedPotBaseComponentImpl extends BlockBaseComponentImpl {
 
     @Override
     public Set<ItemStack> getDrops(Block block, ItemStack usedItem, Entity entity) {
+        if (ItemHelper.isTool(usedItem.getItemType())) {
+            return Set.of(ItemTypes.BRICK.createItemStack(4));
+        }
         return Set.of(this.createDecoratedPotDrop(block));
     }
 

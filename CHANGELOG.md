@@ -14,6 +14,7 @@ Unless otherwise specified, any version comparison below is the comparison of th
 
 - (API) Added support for custom game modes (`GameMode`). Use `GameMode.builder()` to create a custom game mode.
 - Added support for MCBE 1.26.45 (protocol v2169), not including the lastest features
+- Implemented Decorated Pot drop
 
 # 0.14.1 (API 0.30.0) - Unreleased
 
