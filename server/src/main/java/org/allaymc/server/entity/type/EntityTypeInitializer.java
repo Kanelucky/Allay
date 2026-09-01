@@ -54,6 +54,12 @@ import static org.allaymc.server.entity.ai.evaluator.LogicHelper.any;
 @SuppressWarnings("unused")
 @UtilityClass
 public final class EntityTypeInitializer {
+
+    private static final float FOX_BASE_SPEED = 0.3f;
+    private static final float FOX_PANIC_SPEED = FOX_BASE_SPEED * 1.25f;
+    private static final float FOX_TEMPT_SPEED = FOX_BASE_SPEED * 0.5f;
+    private static final float FOX_STROLL_SPEED = FOX_BASE_SPEED * 0.8f;
+
     public static void initFallingBlock() {
         EntityTypes.FALLING_BLOCK = AllayEntityType
                 .builder(EntityFallingBlockImpl.class)
@@ -900,6 +906,73 @@ public final class EntityTypeInitializer {
                             .controller(new LookController(true, true))
                             .controller(new FluctuateController())
                             // Route finder
+                            .routeFinder(new FlatAStarRouteFinder(new WalkingPosEvaluator()))
+                            .build();
+
+                    return new EntityAIComponentImpl(behaviorGroup);
+                }, EntityAIComponentImpl.class)
+                .build();
+    }
+
+    public static void initFox() {
+        EntityTypes.FOX = AllayEntityType
+                .builder(EntityFoxImpl.class)
+                .vanillaEntity(EntityId.FOX)
+                .addComponent(EntityFoxBaseComponentImpl::new, EntityFoxBaseComponentImpl.class)
+                .addComponent(() -> {
+                    var component = new EntityLivingComponentImpl();
+                    component.setMaxHealth(8);
+                    return component;
+                }, EntityLivingComponentImpl.class)
+                .addComponent(EntityAnimalPhysicsComponentImpl::new, EntityAnimalPhysicsComponentImpl.class)
+                .addComponent(() -> new EntityAnimalComponentImpl(item -> item.getItemType() == ItemTypes.SWEET_BERRIES || item.getItemType() == ItemTypes.GLOW_BERRIES), EntityAnimalComponentImpl.class)
+                .addComponent(EntityBabyComponentImpl::new, EntityBabyComponentImpl.class)
+                .addComponent(EntityHeadYawComponentImpl::new, EntityHeadYawComponentImpl.class)
+                .addComponent(EntitySleepableComponentImpl::new, EntitySleepableComponentImpl.class)
+                .addComponent(EntityParallelTickComponentImpl::new, EntityParallelTickComponentImpl.class)
+                .addComponent(() -> {
+                    var behaviorGroup = BehaviorGroupImpl.builder()
+                            .sensor(new NearestFeedingPlayerSensor(16))
+                            .sensor(new NearestPlayerSensor(6, 0, 20))
+                            .coreBehavior(BehaviorImpl.builder()
+                                    .executor(new InLoveExecutor(400))
+                                    .evaluator(all(
+                                            entity -> !entity.getMemoryStorage().get(MemoryTypes.IS_IN_LOVE),
+                                            entity -> {
+                                                var lastLoveTime = entity.getMemoryStorage().get(MemoryTypes.LAST_IN_LOVE_TIME);
+                                                return lastLoveTime == null || lastLoveTime <= 0 || entity.getTick() - lastLoveTime >= 6000;
+                                            }, new PassByTimeEvaluator(MemoryTypes.LAST_BE_FEED_TIME, 0, 400)
+                                    ))
+                                    .priority(1)
+                                    .build())
+                            .behavior(BehaviorImpl.builder()
+                                    .executor(new FlatRandomRoamExecutor(FOX_PANIC_SPEED, 12, 40, true, 100, true, 10))
+                                    .evaluator(new PassByTimeEvaluator(EntityIntelligent::getLastDamageTime, 0, 100))
+                                    .priority(6)
+                                    .build())
+                            .behavior(BehaviorImpl.builder()
+                                    .executor(new EntityBreedingExecutor(100, FOX_BASE_SPEED))
+                                    .evaluator(entity -> entity.getMemoryStorage().get(MemoryTypes.IS_IN_LOVE))
+                                    .priority(5)
+                                    .build())
+                            .behavior(BehaviorImpl.builder()
+                                    .executor(new FollowEntityExecutor(MemoryTypes.NEAREST_FEEDING_PLAYER, FOX_TEMPT_SPEED, 256, 2.25))
+                                    .evaluator(new MemoryCheckNotEmptyEvaluator(MemoryTypes.NEAREST_FEEDING_PLAYER))
+                                    .priority(4)
+                                    .build())
+                            .behavior(BehaviorImpl.builder()
+                                    .executor(new LookAtEntityExecutor(MemoryTypes.NEAREST_PLAYER, 100))
+                                    .evaluator(all(new MemoryCheckNotEmptyEvaluator(MemoryTypes.NEAREST_PLAYER), new ProbabilityEvaluator(2, 100)))
+                                    .priority(2)
+                                    .build())
+                            .behavior(BehaviorImpl.builder()
+                                    .executor(new FlatRandomRoamExecutor(FOX_STROLL_SPEED, 12, 100, false, -1, true, 10))
+                                    .evaluator(entity -> true)
+                                    .priority(1)
+                                    .build())
+                            .controller(new WalkController())
+                            .controller(new LookController(true, true))
+                            .controller(new FluctuateController())
                             .routeFinder(new FlatAStarRouteFinder(new WalkingPosEvaluator()))
                             .build();
 

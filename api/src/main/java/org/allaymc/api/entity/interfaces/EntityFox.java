@@ -1,7 +1,6 @@
 package org.allaymc.api.entity.interfaces;
 
-import org.allaymc.api.entity.Entity;
+import org.allaymc.api.entity.component.EntityHeadYawComponent;
+import org.allaymc.api.entity.component.EntitySleepableComponent;
 
-public interface EntityFox extends Entity {
-
-}
+public interface EntityFox extends EntityAnimal, EntityHeadYawComponent, EntitySleepableComponent {}
