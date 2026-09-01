@@ -13,6 +13,7 @@ Unless otherwise specified, any version comparison below is the comparison of th
 <small>[Compare with original Allay](https://github.com/AllayMC/Allay/compare/master...Kanelucky:Allay:develop)<small>
 
 - (API) Added support for custom game modes (`GameMode`). Use `GameMode.builder()` to create a custom game mode.
+- (API) Added `PlayerDeathEvent`
 - Added support for MCBE 1.26.45 (protocol v2169), not including the lastest features
 - Implemented Decorated Pot drop
 
