@@ -1,6 +1,5 @@
 package org.allaymc.server.entity.type;
 
-import com.google.common.cache.ForwardingLoadingCache;
 import lombok.experimental.UtilityClass;
 import org.allaymc.api.block.type.BlockTypes;
 import org.allaymc.api.entity.ai.memory.MemoryTypes;
@@ -998,15 +997,15 @@ public final class EntityTypeInitializer {
                         () -> {
                             var behaviorGroup = BehaviorGroupImpl.builder()
                                     .sensor(new NearestPlayerSensor(40, 0, 20))
-                                    .coreBehavior(BehaviorImpl.builder()
-                                            .executor(new BowShootExecutor(MemoryTypes.ATTACK_TARGET, 0.3f, 20))
-                                            .evaluator(all(new MemoryCheckNotEmptyEvaluator(MemoryTypes.ATTACK_TARGET), entity -> isValidTarget(entity, entity.getMemoryStorage().get(MemoryTypes.ATTACK_TARGET))))
+                                    .behavior(BehaviorImpl.builder()
+                                            .executor(new BowShootExecutor(MemoryTypes.ATTACK_TARGET, MemoryTypes.NEAREST_PLAYER, 0.3f, 20, 0, 20, 20))
+                                            .evaluator(all(entity -> !entity.getMemoryStorage().isEmpty(MemoryTypes.ATTACK_TARGET) || !entity.getMemoryStorage().isEmpty(MemoryTypes.NEAREST_PLAYER), entity -> true))
                                             .priority(3)
                                             .build())
                                     .behavior(BehaviorImpl.builder()
-                                            .executor(new MoveToTargetExecutor(MemoryTypes.MOVE_TARGET, 1.0f, true))
-                                            .evaluator(all(new MemoryCheckNotEmptyEvaluator(MemoryTypes.MOVE_TARGET), entity -> isValidTarget(entity, entity.getMemoryStorage().get(MemoryTypes.NEAREST_PLAYER))))
-                                            .priority(2)
+                                            .executor(new FlatRandomRoamExecutor(0.1f, 12, 100, false, -1, true, 10))
+                                            .evaluator(entity -> true)
+                                            .priority(1)
                                             .build())
                                     .controller(new WalkController())
                                     .controller(new FluctuateController())
