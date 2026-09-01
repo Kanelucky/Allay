@@ -18,7 +18,7 @@ public class PlayerDeathEventTest {
         var event = new PlayerDeathEvent(player, deathInfo);
         System.out.println("Death message: " + event.getDeathMessage());
         System.out.println("Arguments: " + Arrays.toString(event.getDeathInfo().right()));
-        assertSame(player, event.getEntity());
+        assertSame(player, event.getPlayer());
         assertSame(deathInfo, event.getDeathInfo());
     }
 

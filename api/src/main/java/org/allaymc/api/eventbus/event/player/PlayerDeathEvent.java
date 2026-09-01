@@ -1,7 +1,6 @@
 package org.allaymc.api.eventbus.event.player;
 
 import org.allaymc.api.entity.interfaces.EntityPlayer;
-import org.allaymc.api.eventbus.event.entity.EntityDieEvent;
 import org.allaymc.api.utils.tuple.Pair;
 
 /**
@@ -9,18 +8,13 @@ import org.allaymc.api.utils.tuple.Pair;
  *
  * @author Kanelucky
  */
-public class PlayerDeathEvent extends EntityDieEvent {
+public class PlayerDeathEvent extends PlayerEvent {
 
     private Pair<String, String[]> deathInfo;
 
     public PlayerDeathEvent(EntityPlayer player, Pair<String, String[]> deathInfo) {
         super(player);
         this.deathInfo = deathInfo;
-    }
-
-    @Override
-    public EntityPlayer getEntity() {
-        return (EntityPlayer) super.getEntity();
     }
 
     /**
