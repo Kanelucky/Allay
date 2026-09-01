@@ -1,13 +1,17 @@
 package org.allaymc.server.entity.ai.executor;
 
+import org.allaymc.api.container.ContainerTypes;
+import org.allaymc.api.container.interfaces.EntityHandContainer;
 import org.allaymc.api.entity.EntityInitInfo;
 import org.allaymc.api.entity.ai.behavior.BehaviorExecutor;
 import org.allaymc.api.entity.ai.memory.MemoryType;
+import org.allaymc.api.entity.component.EntityContainerHolderComponent;
 import org.allaymc.api.entity.data.EntityAnimation;
 import org.allaymc.api.entity.interfaces.EntityIntelligent;
 import org.allaymc.api.entity.interfaces.EntityLiving;
 import org.allaymc.api.entity.type.EntityTypes;
 import org.allaymc.api.eventbus.event.entity.EntityShootBowEvent;
+import org.allaymc.api.item.ItemStack;
 import org.allaymc.api.item.interfaces.ItemBowStack;
 import org.allaymc.api.item.type.ItemTypes;
 import org.allaymc.api.math.location.Location3dc;
@@ -70,6 +74,10 @@ public class BowShootExecutor implements BehaviorExecutor {
 
     @Override
     public boolean execute(EntityIntelligent entity) {
+        if (entity instanceof EntityContainerHolderComponent holder) {
+            EntityHandContainer hand = holder.getContainer(ContainerTypes.ENTITY_HAND);
+            hand.setItemInHand(ItemTypes.BOW.createItemStack());
+        }
         var living = resolveTarget(entity);
         if (living == null) return false;
 
@@ -123,7 +131,8 @@ public class BowShootExecutor implements BehaviorExecutor {
             if (tick1 > coolDownTick) {
                 tick1 = 0;
                 tick2 = 1;
-                entity.applyAnimation(new EntityAnimation("animation.humanoid.bow_and_arrow.v1.0", "", "controller.animation.skeleton.attack", ""));
+                entity.applyAnimation(new EntityAnimation(
+                        "animation.humanoid.bow_and_arrow.v1.0", "", "controller.animation.skeleton.attack", ""));
             }
             return true;
         }
