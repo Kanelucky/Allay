@@ -998,7 +998,7 @@ public final class EntityTypeInitializer {
                             var behaviorGroup = BehaviorGroupImpl.builder()
                                     .sensor(new NearestPlayerSensor(40, 0, 20))
                                     .behavior(BehaviorImpl.builder()
-                                            .executor(new BowShootExecutor(MemoryTypes.ATTACK_TARGET, MemoryTypes.NEAREST_PLAYER, 0.3f, 20, 0, 20, 20))
+                                            .executor(new BowShootExecutor(MemoryTypes.ATTACK_TARGET, MemoryTypes.NEAREST_PLAYER, 0.1f, 20, 0, 20, 20))
                                             .evaluator(all(entity -> !entity.getMemoryStorage().isEmpty(MemoryTypes.ATTACK_TARGET) || !entity.getMemoryStorage().isEmpty(MemoryTypes.NEAREST_PLAYER), entity -> true))
                                             .priority(3)
                                             .build())
