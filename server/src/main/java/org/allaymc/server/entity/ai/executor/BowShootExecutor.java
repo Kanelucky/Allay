@@ -3,6 +3,7 @@ package org.allaymc.server.entity.ai.executor;
 import org.allaymc.api.entity.EntityInitInfo;
 import org.allaymc.api.entity.ai.behavior.BehaviorExecutor;
 import org.allaymc.api.entity.ai.memory.MemoryType;
+import org.allaymc.api.entity.data.EntityAnimation;
 import org.allaymc.api.entity.interfaces.EntityIntelligent;
 import org.allaymc.api.entity.interfaces.EntityLiving;
 import org.allaymc.api.entity.type.EntityTypes;
@@ -12,6 +13,7 @@ import org.allaymc.api.item.type.ItemTypes;
 import org.allaymc.api.math.location.Location3dc;
 import org.allaymc.api.player.GameMode;
 import org.allaymc.api.server.Server;
+import org.allaymc.api.world.sound.SimpleSound;
 import org.joml.Vector3d;
 
 /**
@@ -121,7 +123,7 @@ public class BowShootExecutor implements BehaviorExecutor {
             if (tick1 > coolDownTick) {
                 tick1 = 0;
                 tick2 = 1;
-                // TODO: play bow draw animation
+                entity.applyAnimation(new EntityAnimation("animation.humanoid.bow_and_arrow.v1.0", "", "controller.animation.skeleton.attack", ""));
             }
             return true;
         }
@@ -200,5 +202,6 @@ public class BowShootExecutor implements BehaviorExecutor {
         }
 
         shooter.getDimension().getEntityManager().addEntity(event.getArrow());
+        shooter.getDimension().addSound(arrow.getLocation(), SimpleSound.BOW_SHOOT);
     }
 }
