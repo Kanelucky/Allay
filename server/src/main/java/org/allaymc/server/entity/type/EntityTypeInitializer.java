@@ -212,7 +212,7 @@ public final class EntityTypeInitializer {
                                     .executor(new MeleeAttackExecutor(MemoryTypes.ATTACK_TARGET, 0.1f, 40, true, 30, Math.sqrt(2.5), true))
                                     .evaluator(all(
                                             new MemoryCheckNotEmptyEvaluator(MemoryTypes.ATTACK_TARGET),
-                                            entity -> isValidZombieTarget(entity, entity.getMemoryStorage().get(MemoryTypes.ATTACK_TARGET))
+                                            entity -> isValidTarget(entity, entity.getMemoryStorage().get(MemoryTypes.ATTACK_TARGET))
                                     ))
                                     .priority(3)
                                     .build())
@@ -220,7 +220,7 @@ public final class EntityTypeInitializer {
                                     .executor(new MeleeAttackExecutor(MemoryTypes.NEAREST_PLAYER, 0.1f, 40, false,30, Math.sqrt(2.5), true))
                                     .evaluator(all(
                                             new MemoryCheckNotEmptyEvaluator(MemoryTypes.NEAREST_PLAYER),
-                                            entity -> isValidZombieTarget(entity, entity.getMemoryStorage().get(MemoryTypes.NEAREST_PLAYER))
+                                            entity -> isValidTarget(entity, entity.getMemoryStorage().get(MemoryTypes.NEAREST_PLAYER))
                                     ))
                                     .priority(2)
                                     .build())
@@ -981,7 +981,44 @@ public final class EntityTypeInitializer {
                 .build();
     }
 
-    private static boolean isValidZombieTarget(EntityIntelligent entity, long targetId) {
+    public static void initSkeleton() {
+        EntityTypes.SKELETON = AllayEntityType.builder(EntitySkeletonImpl.class)
+                .vanillaEntity(EntityId.SKELETON)
+                .addComponent(EntityHumanLikeBaseComponentImpl::new, EntityHumanLikeBaseComponentImpl.class)
+                .addComponent(
+                        EntityHumanLikeContainerHolderComponentImpl::new,
+                        EntityHumanLikeContainerHolderComponentImpl.class)
+                .addComponent(EntityUndeadComponentImpl::new, EntityUndeadComponentImpl.class)
+                .addComponent(EntitySkeletonLivingComponentImpl::new, EntitySkeletonLivingComponentImpl.class)
+                .addComponent(EntityHumanPhysicsComponentImpl::new, EntityHumanPhysicsComponentImpl.class)
+                .addComponent(EntityHeadYawComponentImpl::new, EntityHeadYawComponentImpl.class)
+                .addComponent(EntityParallelTickComponentImpl::new, EntityParallelTickComponentImpl.class)
+                .addComponent(
+                        () -> {
+                            var behaviorGroup = BehaviorGroupImpl.builder()
+                                    .sensor(new NearestPlayerSensor(40, 0, 20))
+                                    .behavior(BehaviorImpl.builder()
+                                            .executor(new BowShootExecutor(MemoryTypes.ATTACK_TARGET, MemoryTypes.NEAREST_PLAYER, 0.1f, 20, 0, 20, 20))
+                                            .evaluator(all(entity -> !entity.getMemoryStorage().isEmpty(MemoryTypes.ATTACK_TARGET) || !entity.getMemoryStorage().isEmpty(MemoryTypes.NEAREST_PLAYER), entity -> true))
+                                            .priority(3)
+                                            .build())
+                                    .behavior(BehaviorImpl.builder()
+                                            .executor(new FlatRandomRoamExecutor(0.1f, 12, 100, false, -1, true, 10))
+                                            .evaluator(entity -> true)
+                                            .priority(1)
+                                            .build())
+                                    .controller(new WalkController())
+                                    .controller(new FluctuateController())
+                                    .controller(new LookController(true, true))
+                                    .routeFinder(new FlatAStarRouteFinder(new WalkingPosEvaluator()))
+                                    .build();
+                            return new EntityAIComponentImpl(behaviorGroup);
+                        },
+                        EntityAIComponentImpl.class)
+                .build();
+    }
+
+    private static boolean isValidTarget(EntityIntelligent entity, long targetId) {
         var target = entity.getDimension().getEntityManager().getEntity(targetId);
         if (!(target instanceof EntityLivingComponent) || target == entity || !target.isAlive()) {
             return false;
