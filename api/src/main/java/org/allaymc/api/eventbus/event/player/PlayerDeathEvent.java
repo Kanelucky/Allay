@@ -1,6 +1,7 @@
 package org.allaymc.api.eventbus.event.player;
 
 import org.allaymc.api.entity.interfaces.EntityPlayer;
+import org.allaymc.api.eventbus.event.CancellableEvent;
 import org.allaymc.api.utils.tuple.Pair;
 
 /**
@@ -8,7 +9,7 @@ import org.allaymc.api.utils.tuple.Pair;
  *
  * @author Kanelucky
  */
-public class PlayerDeathEvent extends PlayerEvent {
+public class PlayerDeathEvent extends PlayerEvent implements CancellableEvent {
 
     private Pair<String, String[]> deathInfo;
 

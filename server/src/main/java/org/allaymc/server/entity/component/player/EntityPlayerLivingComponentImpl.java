@@ -326,7 +326,7 @@ public class EntityPlayerLivingComponentImpl extends EntityLivingComponentImpl {
                 lastDamage.getDamageType().getDeathInfo(thisPlayer, lastDamage.getAttacker()) :
                 DamageType.API.getDeathInfo(thisPlayer, null);
         var event = new PlayerDeathEvent(thisPlayer, deathInfo);
-        event.call();
+        if (!event.call()) return;
         deathInfo = event.getDeathInfo();
         if (thisPlayer.getWorld().getWorldData().<Boolean>getGameRuleValue(GameRule.SHOW_DEATH_MESSAGES)) {
             Server.getInstance().getMessageChannel().broadcastTranslatable(deathInfo.left(), (Object[]) deathInfo.right());
