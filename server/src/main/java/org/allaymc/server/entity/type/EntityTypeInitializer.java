@@ -1,10 +1,10 @@
 package org.allaymc.server.entity.type;
 
+import lombok.experimental.Delegate;
 import lombok.experimental.UtilityClass;
 import org.allaymc.api.block.type.BlockTypes;
 import org.allaymc.api.entity.ai.memory.MemoryTypes;
-import org.allaymc.api.entity.component.EntityBabyComponent;
-import org.allaymc.api.entity.component.EntityLivingComponent;
+import org.allaymc.api.entity.component.*;
 import org.allaymc.api.entity.damage.DamageContainer;
 import org.allaymc.api.entity.damage.DamageType;
 import org.allaymc.api.entity.interfaces.*;
@@ -18,6 +18,7 @@ import org.allaymc.server.entity.ai.behavior.BehaviorImpl;
 import org.allaymc.server.entity.ai.behaviorgroup.BehaviorGroupImpl;
 import org.allaymc.server.entity.ai.controller.FluctuateController;
 import org.allaymc.server.entity.ai.controller.LookController;
+import org.allaymc.server.entity.ai.controller.SpaceMoveController;
 import org.allaymc.server.entity.ai.controller.WalkController;
 import org.allaymc.server.entity.ai.evaluator.BlockCheckEvaluator;
 import org.allaymc.server.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
@@ -25,8 +26,11 @@ import org.allaymc.server.entity.ai.evaluator.PassByTimeEvaluator;
 import org.allaymc.server.entity.ai.evaluator.ProbabilityEvaluator;
 import org.allaymc.server.entity.ai.executor.*;
 import org.allaymc.server.entity.ai.route.finder.FlatAStarRouteFinder;
+import org.allaymc.server.entity.ai.route.finder.SpaceAStarRouteFinder;
+import org.allaymc.server.entity.ai.route.posevaluator.FlyingPosEvaluator;
 import org.allaymc.server.entity.ai.route.posevaluator.WalkingPosEvaluator;
 import org.allaymc.server.entity.ai.sensor.NearestFeedingPlayerSensor;
+import org.allaymc.server.entity.ai.sensor.NearestItemSensor;
 import org.allaymc.server.entity.ai.sensor.NearestPlayerSensor;
 import org.allaymc.server.entity.component.*;
 import org.allaymc.server.entity.component.animal.*;
@@ -1011,6 +1015,42 @@ public final class EntityTypeInitializer {
                                     .controller(new FluctuateController())
                                     .controller(new LookController(true, true))
                                     .routeFinder(new FlatAStarRouteFinder(new WalkingPosEvaluator()))
+                                    .build();
+                            return new EntityAIComponentImpl(behaviorGroup);
+                        },
+                        EntityAIComponentImpl.class)
+                .build();
+    }
+
+    public static void initAllay() {
+        EntityTypes.ALLAY = AllayEntityType.builder(EntityAllayImpl.class)
+                .vanillaEntity(EntityId.ALLAY)
+                .addComponent(
+                        () -> {
+                            var component = new EntityLivingComponentImpl();
+                            component.setMaxHealth(8);
+                            return component;
+                        },
+                        EntityLivingComponentImpl.class)
+                .addComponent(()-> new EntityContainerHolderComponentImpl(), EntityContainerHolderComponentImpl.class)
+                .addComponent(EntityPhysicsComponentImpl::new, EntityPhysicsComponentImpl.class)
+                .addComponent(EntityHeadYawComponentImpl::new, EntityHeadYawComponentImpl.class)
+                .addComponent(EntityParallelTickComponentImpl::new, EntityParallelTickComponentImpl.class)
+                .addComponent(EntityFlyableComponentImpl::new, EntityFlyableComponentImpl.class)
+                .addComponent(EntityUndeadComponentImpl::new, EntityUndeadComponentImpl.class)
+                .addComponent(
+                        () -> {
+                            var behaviorGroup = BehaviorGroupImpl.builder()
+                                    .sensor(new NearestPlayerSensor(64, 0, 20))
+                                    .sensor(new NearestItemSensor(32, 0, 20))
+                                    .behavior(BehaviorImpl.builder()
+                                            .executor(new FlatRandomRoamExecutor(0.1f, 12, 100, false, -1, true, 10))
+                                            .evaluator(entity -> true)
+                                            .priority(1)
+                                            .build())
+                                    .controller(new SpaceMoveController())
+                                    .controller(new LookController(true, true))
+                                    .routeFinder(new SpaceAStarRouteFinder(new FlyingPosEvaluator()))
                                     .build();
                             return new EntityAIComponentImpl(behaviorGroup);
                         },

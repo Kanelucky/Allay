@@ -34,6 +34,9 @@ public final class MemoryTypes {
     public static final MemoryType<Vector3dc> MOVE_DIRECTION_END =
             new MemoryType<>(new Identifier("minecraft:move_direction_end"));
 
+    public static final MemoryType<Vector3dc> LOOKING_ITEM =
+            new MemoryType<>(new Identifier("minecraft:looking_item"));
+
     /**
      * Whether the entity needs to update its move direction.
      */
@@ -101,6 +104,13 @@ public final class MemoryTypes {
      */
     public static final MemoryType<Long> NEAREST_PLAYER =
             new MemoryType<>(new Identifier("minecraft:nearest_player"));
+
+    /**
+     * Runtime ID of the nearest item
+     * Written by {@code NearestItemSensor}
+     */
+    public static final MemoryType<Long> NEAREST_ITEM =
+            new MemoryType<>(new Identifier("minecraft:nearest_item"));
 
     /**
      * Runtime ID of the entity this mob is currently retaliating against.
