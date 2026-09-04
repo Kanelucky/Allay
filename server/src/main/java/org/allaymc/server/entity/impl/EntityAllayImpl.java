@@ -24,7 +24,7 @@ public class EntityAllayImpl extends EntityImpl implements EntityAllay {
     @Delegate
     private EntityHeadYawComponent headYawComponent;
     @Delegate
-    private EntityFlyableComponent flyableComponent;
+    private EntityFlyingPhysicsComponent flyableComponent;
 
     public EntityAllayImpl(EntityInitInfo initInfo,
                            List<ComponentProvider<? extends Component>> componentProviders) {

@@ -16,10 +16,7 @@ import org.allaymc.api.utils.DyeColor;
 import org.allaymc.api.world.sound.SimpleSound;
 import org.allaymc.server.entity.ai.behavior.BehaviorImpl;
 import org.allaymc.server.entity.ai.behaviorgroup.BehaviorGroupImpl;
-import org.allaymc.server.entity.ai.controller.FluctuateController;
-import org.allaymc.server.entity.ai.controller.LookController;
-import org.allaymc.server.entity.ai.controller.SpaceMoveController;
-import org.allaymc.server.entity.ai.controller.WalkController;
+import org.allaymc.server.entity.ai.controller.*;
 import org.allaymc.server.entity.ai.evaluator.BlockCheckEvaluator;
 import org.allaymc.server.entity.ai.evaluator.MemoryCheckNotEmptyEvaluator;
 import org.allaymc.server.entity.ai.evaluator.PassByTimeEvaluator;
@@ -1032,11 +1029,11 @@ public final class EntityTypeInitializer {
                             return component;
                         },
                         EntityLivingComponentImpl.class)
-                .addComponent(()-> new EntityContainerHolderComponentImpl(), EntityContainerHolderComponentImpl.class)
+                .addComponent(() -> new EntityContainerHolderComponentImpl(), EntityContainerHolderComponentImpl.class)
                 .addComponent(EntityPhysicsComponentImpl::new, EntityPhysicsComponentImpl.class)
                 .addComponent(EntityHeadYawComponentImpl::new, EntityHeadYawComponentImpl.class)
                 .addComponent(EntityParallelTickComponentImpl::new, EntityParallelTickComponentImpl.class)
-                .addComponent(EntityFlyableComponentImpl::new, EntityFlyableComponentImpl.class)
+                .addComponent(EntityFlyingPhysicsComponentImpl::new, EntityFlyingPhysicsComponentImpl.class)
                 .addComponent(EntityUndeadComponentImpl::new, EntityUndeadComponentImpl.class)
                 .addComponent(
                         () -> {
@@ -1048,7 +1045,7 @@ public final class EntityTypeInitializer {
                                             .evaluator(entity -> true)
                                             .priority(1)
                                             .build())
-                                    .controller(new SpaceMoveController())
+                                    .controller(new FlyController())
                                     .controller(new LookController(true, true))
                                     .routeFinder(new SpaceAStarRouteFinder(new FlyingPosEvaluator()))
                                     .build();
