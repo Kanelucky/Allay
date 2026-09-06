@@ -1,6 +1,5 @@
 package org.allaymc.server.entity.type;
 
-import lombok.experimental.Delegate;
 import lombok.experimental.UtilityClass;
 import org.allaymc.api.block.type.BlockTypes;
 import org.allaymc.api.entity.ai.memory.MemoryTypes;
@@ -1022,10 +1021,16 @@ public final class EntityTypeInitializer {
     public static void initAllay() {
         EntityTypes.ALLAY = AllayEntityType.builder(EntityAllayImpl.class)
                 .vanillaEntity(EntityId.ALLAY)
+                .addComponent(EntityAllayBaseComponentImpl::new, EntityAllayBaseComponentImpl.class)
                 .addComponent(
                         () -> {
-                            var component = new EntityLivingComponentImpl();
-                            component.setMaxHealth(8);
+                            var component = new EntityLivingComponentImpl() {
+                                @Override
+                                public boolean hasFallDamage() {
+                                    return false;
+                                }
+                            };
+                            component.setMaxHealth(20);
                             return component;
                         },
                         EntityLivingComponentImpl.class)
@@ -1034,7 +1039,6 @@ public final class EntityTypeInitializer {
                 .addComponent(EntityHeadYawComponentImpl::new, EntityHeadYawComponentImpl.class)
                 .addComponent(EntityParallelTickComponentImpl::new, EntityParallelTickComponentImpl.class)
                 .addComponent(EntityFlyingPhysicsComponentImpl::new, EntityFlyingPhysicsComponentImpl.class)
-                .addComponent(EntityUndeadComponentImpl::new, EntityUndeadComponentImpl.class)
                 .addComponent(
                         () -> {
                             var behaviorGroup = BehaviorGroupImpl.builder()
@@ -1044,6 +1048,15 @@ public final class EntityTypeInitializer {
                                             .executor(new FlatRandomRoamExecutor(0.1f, 12, 100, false, -1, true, 10))
                                             .evaluator(entity -> true)
                                             .priority(1)
+                                            .build())
+                                    .behavior(BehaviorImpl.builder()
+                                            .executor(new LookAtEntityExecutor(MemoryTypes.NEAREST_PLAYER, 100))
+                                            .evaluator(all(
+                                                    new MemoryCheckNotEmptyEvaluator(MemoryTypes.NEAREST_PLAYER),
+                                                    new ProbabilityEvaluator(2, 5)
+                                            ))
+                                            .priority(2)
+                                            .period(100)
                                             .build())
                                     .controller(new FlyController())
                                     .controller(new LookController(true, true))
