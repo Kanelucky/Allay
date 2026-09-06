@@ -82,10 +82,7 @@ import org.cloudburstmc.protocol.bedrock.data.camera.CameraShakeAction;
 import org.cloudburstmc.protocol.bedrock.data.command.CommandData;
 import org.cloudburstmc.protocol.bedrock.data.command.CommandPermission;
 import org.cloudburstmc.protocol.bedrock.data.definitions.DimensionDefinition;
-import org.cloudburstmc.protocol.bedrock.data.entity.EntityDataMap;
-import org.cloudburstmc.protocol.bedrock.data.entity.EntityDataTypes;
-import org.cloudburstmc.protocol.bedrock.data.entity.EntityEventType;
-import org.cloudburstmc.protocol.bedrock.data.entity.EntityFlag;
+import org.cloudburstmc.protocol.bedrock.data.entity.*;
 import org.cloudburstmc.protocol.bedrock.data.inventory.*;
 import org.cloudburstmc.protocol.bedrock.data.inventory.crafting.RecipeUnlockingRequirement;
 import org.cloudburstmc.protocol.bedrock.data.inventory.crafting.recipe.*;
@@ -1233,6 +1230,11 @@ public class PacketEncoder_v766 extends PacketEncoder {
                 }
             }
             case EntitySheep sheep -> metadata.setFlag(EntityFlag.SHEARED, sheep.isSheared());
+            case EntityCreeper creeper -> {
+                metadata.setFlag(EntityFlag.IGNITED, creeper.isSwelling());
+                metadata.put(EntityDataTypes.SWELL_DIRECTION, creeper.isSwelling() ? 1 : -1);
+                metadata.put(EntityDataTypes.FUSE_TIME, creeper.getFuseTime());
+            }
             default -> {
             }
         }

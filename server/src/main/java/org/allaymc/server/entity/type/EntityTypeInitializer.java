@@ -60,6 +60,11 @@ public final class EntityTypeInitializer {
     private static final float FOX_TEMPT_SPEED = FOX_BASE_SPEED * 0.5f;
     private static final float FOX_STROLL_SPEED = FOX_BASE_SPEED * 0.8f;
 
+    private static final float CREEPER_SPEED = 0.15f;
+    private static final double CREEPER_FUSE_RANGE = 3;
+    private static final int CREEPER_FUSE_TIME = 30;
+    private static final float CREEPER_EXPLOSION_SIZE = 3;
+
     public static void initFallingBlock() {
         EntityTypes.FALLING_BLOCK = AllayEntityType
                 .builder(EntityFallingBlockImpl.class)
@@ -1065,6 +1070,54 @@ public final class EntityTypeInitializer {
                             return new EntityAIComponentImpl(behaviorGroup);
                         },
                         EntityAIComponentImpl.class)
+                .build();
+    }
+
+    public static void initCreeper() {
+        EntityTypes.CREEPER = AllayEntityType
+                .builder(EntityCreeperImpl.class)
+                .vanillaEntity(EntityId.CREEPER)
+                .addComponent(EntityCreeperBaseComponentImpl::new, EntityCreeperBaseComponentImpl.class)
+                .addComponent(EntityCreeperLivingComponentImpl::new, EntityCreeperLivingComponentImpl.class)
+                .addComponent(EntityHeadYawComponentImpl::new, EntityHeadYawComponentImpl.class)
+                .addComponent(EntityPhysicsComponentImpl::new, EntityPhysicsComponentImpl.class)
+                .addComponent(EntityParallelTickComponentImpl::new, EntityParallelTickComponentImpl.class)
+                .addComponent(() -> {
+                    var behaviorGroup = BehaviorGroupImpl.builder()
+                            .sensor(new NearestPlayerSensor(16, 0, 20))
+                            .behavior(BehaviorImpl.builder()
+                                    .executor(new SwellAndExplodeExecutor(
+                                            MemoryTypes.ATTACK_TARGET, CREEPER_SPEED, 32,
+                                            CREEPER_FUSE_RANGE, true, CREEPER_FUSE_TIME, CREEPER_EXPLOSION_SIZE))
+                                    .evaluator(all(
+                                            new MemoryCheckNotEmptyEvaluator(MemoryTypes.ATTACK_TARGET),
+                                            entity -> isValidTarget(entity, entity.getMemoryStorage().get(MemoryTypes.ATTACK_TARGET))
+                                    ))
+                                    .priority(3)
+                                    .build())
+                            .behavior(BehaviorImpl.builder()
+                                    .executor(new SwellAndExplodeExecutor(
+                                            MemoryTypes.NEAREST_PLAYER, CREEPER_SPEED, 32,
+                                            CREEPER_FUSE_RANGE, false, CREEPER_FUSE_TIME, CREEPER_EXPLOSION_SIZE))
+                                    .evaluator(all(
+                                            new MemoryCheckNotEmptyEvaluator(MemoryTypes.NEAREST_PLAYER),
+                                            entity -> isValidTarget(entity, entity.getMemoryStorage().get(MemoryTypes.NEAREST_PLAYER))
+                                    ))
+                                    .priority(2)
+                                    .build())
+                            .behavior(BehaviorImpl.builder()
+                                    .executor(new FlatRandomRoamExecutor(0.1f, 12, 100, false, -1, true, 10))
+                                    .evaluator(entity -> true)
+                                    .priority(1)
+                                    .build())
+                            .controller(new WalkController())
+                            .controller(new FluctuateController())
+                            .controller(new LookController(true, true))
+                            .routeFinder(new FlatAStarRouteFinder(new WalkingPosEvaluator()))
+                            .build();
+
+                    return new EntityAIComponentImpl(behaviorGroup);
+                }, EntityAIComponentImpl.class)
                 .build();
     }
 
