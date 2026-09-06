@@ -16,7 +16,7 @@ Unless otherwise specified, any version comparison below is the comparison of th
 - (API) Added `PlayerDeathEvent`
 - Added support for MCBE 1.26.45 (protocol v2169), not including the lastest features
 - Implemented Decorated Pot drop
-- Implemented Skeleton, Allay, Fox, Creeper entity
+- Implemented Skeleton, Allay, Fox, Creeper, Bat entity
 
 # 0.14.1 (API 0.30.0) - Unreleased
 
