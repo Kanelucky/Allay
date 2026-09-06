@@ -11,7 +11,6 @@ import org.allaymc.api.entity.interfaces.EntityIntelligent;
 import org.allaymc.api.entity.interfaces.EntityLiving;
 import org.allaymc.api.entity.type.EntityTypes;
 import org.allaymc.api.eventbus.event.entity.EntityShootBowEvent;
-import org.allaymc.api.item.ItemStack;
 import org.allaymc.api.item.interfaces.ItemBowStack;
 import org.allaymc.api.item.type.ItemTypes;
 import org.allaymc.api.math.location.Location3dc;
