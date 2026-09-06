@@ -1121,6 +1121,43 @@ public final class EntityTypeInitializer {
                 .build();
     }
 
+    public static void initBat() {
+        EntityTypes.BAT = AllayEntityType.builder(EntityBatImpl.class)
+                .vanillaEntity(EntityId.BAT)
+                .addComponent(EntityBatBaseComponentImpl::new, EntityBatBaseComponentImpl.class)
+                .addComponent(EntityFlyingPhysicsComponentImpl::new, EntityFlyingPhysicsComponentImpl.class)
+                .addComponent(EntityHeadYawComponentImpl::new, EntityHeadYawComponentImpl.class)
+                .addComponent(EntityParallelTickComponentImpl::new, EntityParallelTickComponentImpl.class)
+                .addComponent(
+                        () -> {
+                            var component = new EntityLivingComponentImpl() {
+                                @Override
+                                public boolean hasFallDamage() {
+                                    return false;
+                                }
+                            };
+                            component.setMaxHealth(6);
+                            return component;
+                        },
+                        EntityLivingComponentImpl.class)
+                .addComponent(
+                        () -> {
+                            var behaviorGroup = BehaviorGroupImpl.builder()
+                                    .behavior(BehaviorImpl.builder()
+                                            .executor(new SpaceRandomRoamExecutor(0.3f, 12, 100, 20,  false, -1, true, 10))
+                                            .evaluator(entity -> true)
+                                            .build())
+                                    .controller(new FlyController())
+                                    .controller(new LookController(true, true))
+                                    .routeFinder(new SpaceAStarRouteFinder(new FlyingPosEvaluator()))
+                                    .controller(new SpaceMoveController())
+                                    .build();
+                            return new EntityAIComponentImpl(behaviorGroup);
+                        },
+                        EntityAIComponentImpl.class)
+                .build();
+    }
+
     private static boolean isValidTarget(EntityIntelligent entity, long targetId) {
         var target = entity.getDimension().getEntityManager().getEntity(targetId);
         if (!(target instanceof EntityLivingComponent) || target == entity || !target.isAlive()) {
