@@ -5,7 +5,6 @@ import org.allaymc.api.entity.ai.behavior.BehaviorExecutor;
 import org.allaymc.api.entity.ai.memory.MemoryType;
 import org.allaymc.api.entity.ai.memory.MemoryTypes;
 import org.allaymc.api.entity.component.EntityCreeperBaseComponent;
-import org.allaymc.api.entity.data.EntityAnimation;
 import org.allaymc.api.entity.interfaces.EntityIntelligent;
 import org.allaymc.api.entity.interfaces.EntityLiving;
 import org.allaymc.api.eventbus.event.entity.EntityExplodeEvent;
