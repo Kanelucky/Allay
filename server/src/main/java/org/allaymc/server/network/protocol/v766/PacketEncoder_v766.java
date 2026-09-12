@@ -1238,6 +1238,9 @@ public class PacketEncoder_v766 extends PacketEncoder {
                 metadata.put(EntityDataTypes.SWELL_DIRECTION, creeper.isSwelling() ? 1 : -1);
                 metadata.put(EntityDataTypes.FUSE_TIME, creeper.getFuseTime());
             }
+            case EntitySpider spider -> {
+                metadata.setFlag(EntityFlag.WALL_CLIMBING, spider.isClimbing());
+            }
             default -> {
             }
         }

@@ -5,6 +5,7 @@ import org.allaymc.api.block.type.BlockTypes;
 import org.allaymc.api.entity.ai.memory.MemoryTypes;
 import org.allaymc.api.entity.component.EntityBabyComponent;
 import org.allaymc.api.entity.component.EntityLivingComponent;
+import org.allaymc.api.entity.component.EntityParallelTickComponent;
 import org.allaymc.api.entity.damage.DamageContainer;
 import org.allaymc.api.entity.damage.DamageType;
 import org.allaymc.api.entity.interfaces.*;
@@ -1152,6 +1153,51 @@ public final class EntityTypeInitializer {
                                     .controller(new LookController(true, true))
                                     .routeFinder(new SpaceAStarRouteFinder(new FlyingPosEvaluator()))
                                     .controller(new SpaceMoveController())
+                                    .build();
+                            return new EntityAIComponentImpl(behaviorGroup);
+                        },
+                        EntityAIComponentImpl.class)
+                .build();
+    }
+
+    public static void initSpider() {
+        EntityTypes.SPIDER = AllayEntityType
+                .builder(EntitySpiderImpl.class)
+                .vanillaEntity(EntityId.SPIDER)
+                .addComponent(EntitySpiderLivingComponentImpl::new, EntitySpiderLivingComponentImpl.class)
+                .addComponent(EntityHeadYawComponentImpl::new, EntityHeadYawComponentImpl.class)
+                .addComponent(EntityParallelTickComponentImpl::new, EntityParallelTickComponentImpl.class)
+                .addComponent(EntityClimbableComponentImpl::new, EntityClimbableComponentImpl.class)
+                .addComponent(
+                        () -> {
+                            var behaviorGroup = BehaviorGroupImpl.builder()
+                                    .sensor(new NearestPlayerSensor(40, 0, 20))
+                                    .behavior(BehaviorImpl.builder()
+                                            .executor(new MeleeAttackExecutor(MemoryTypes.ATTACK_TARGET, 0.2f, 40, true, 30, Math.sqrt(2.5), true))
+                                            .evaluator(all(
+                                                    new MemoryCheckNotEmptyEvaluator(MemoryTypes.ATTACK_TARGET),
+                                                    entity -> isValidTarget(entity, entity.getMemoryStorage().get(MemoryTypes.ATTACK_TARGET))
+                                            ))
+                                            .priority(3)
+                                            .build())
+                                    .behavior(BehaviorImpl.builder()
+                                            .executor(new MeleeAttackExecutor(MemoryTypes.NEAREST_PLAYER, 0.2f, 40, false,30, Math.sqrt(2.5), true))
+                                            .evaluator(all(
+                                                    new MemoryCheckNotEmptyEvaluator(MemoryTypes.NEAREST_PLAYER),
+                                                    entity -> isValidTarget(entity, entity.getMemoryStorage().get(MemoryTypes.NEAREST_PLAYER))
+                                            ))
+                                            .priority(2)
+                                            .build())
+                                    .behavior(BehaviorImpl.builder()
+                                            .executor(new FlatRandomRoamExecutor(0.1f, 12, 100, false, -1, true, 10))
+                                            .evaluator(entity -> true)
+                                            .priority(1)
+                                            .build())
+                                    .controller(new ClimbController())
+                                    .controller(new WalkController())
+                                    .controller(new FluctuateController())
+                                    .controller(new LookController(true, true))
+                                    .routeFinder(new FlatAStarRouteFinder(new WalkingPosEvaluator()))
                                     .build();
                             return new EntityAIComponentImpl(behaviorGroup);
                         },

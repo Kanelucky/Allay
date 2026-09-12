@@ -1,6 +1,7 @@
 package org.allaymc.server.entity.ai.controller;
 
 import org.allaymc.api.entity.ai.controller.Controller;
+import org.allaymc.api.entity.component.EntityClimbableComponent;
 import org.allaymc.api.entity.interfaces.EntityIntelligent;
 import org.joml.primitives.AABBd;
 
@@ -18,6 +19,12 @@ public class WalkController implements Controller {
 
     @Override
     public boolean control(EntityIntelligent entity) {
+        if (entity instanceof EntityClimbableComponent climbable && climbable.isClimbing()) {
+            System.out.println("[WALK] SKIPPED because climbing");
+            return false;
+        }
+        System.out.println("[WALK] running, motion=" + entity.getMotion());
+
         currentJumpCoolDown++;
 
         if (!entity.hasMoveDirection()) {
