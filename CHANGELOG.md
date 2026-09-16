@@ -15,6 +15,8 @@ Unless otherwise specified, any version comparison below is the comparison of th
 - (API) Added support for custom game modes (`GameMode`). Use `GameMode.builder()` to create a custom game mode.
 - (API) Added `PlayerDeathEvent`
 - Added support for MCBE 1.26.45 (protocol v2169), not including the lastest features
+- Added support for MCBE 1.26.50 (protocol v2192), not including the lastest features
+- Added support for MCBE 1.26.51 (protocol v2193), not including the lastest features
 - Implemented Decorated Pot drop
 - Implemented Skeleton, Allay, Fox, Creeper entity
 
