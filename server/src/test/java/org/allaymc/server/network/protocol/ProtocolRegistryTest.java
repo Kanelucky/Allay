@@ -43,7 +43,7 @@ class ProtocolRegistryTest {
         assertNull(registry.resolve(ClientVariant.NETEASE, 818));
         assertEquals(818, registry.getLowest(ClientVariant.INTERNATIONAL).getProtocolVersion());
         assertInstanceOf(Protocol_v2193.class, registry.resolve(ClientVariant.INTERNATIONAL, 2193));
-        assertEquals(2192, registry.getLatest(ClientVariant.INTERNATIONAL).getProtocolVersion());
+        assertEquals(2193, registry.getLatest(ClientVariant.INTERNATIONAL).getProtocolVersion());
         assertEquals(766, registry.getLowest(ClientVariant.NETEASE).getProtocolVersion());
         assertEquals(860, registry.getLatest(ClientVariant.NETEASE).getProtocolVersion());
     }
