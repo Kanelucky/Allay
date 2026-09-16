@@ -3,7 +3,7 @@ package org.allaymc.server.network.protocol;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import org.allaymc.api.item.recipe.Recipe;
 import org.allaymc.server.network.processor.PacketProcessorRegistry;
-import org.allaymc.server.network.protocol.v2169.Protocol_v2169;
+import org.allaymc.server.network.protocol.v2193.Protocol_v2193;
 import org.allaymc.server.network.protocol.v766.PacketEncoder_v766;
 import org.allaymc.server.network.protocol.v766.Protocol_v766_NetEase;
 import org.allaymc.server.network.protocol.v819.Protocol_v819;
@@ -42,8 +42,8 @@ class ProtocolRegistryTest {
         assertInstanceOf(Protocol_v860_NetEase.class, registry.resolve(ClientVariant.NETEASE, 860));
         assertNull(registry.resolve(ClientVariant.NETEASE, 818));
         assertEquals(818, registry.getLowest(ClientVariant.INTERNATIONAL).getProtocolVersion());
-        assertInstanceOf(Protocol_v2169.class, registry.resolve(ClientVariant.INTERNATIONAL, 2169));
-        assertEquals(2169, registry.getLatest(ClientVariant.INTERNATIONAL).getProtocolVersion());
+        assertInstanceOf(Protocol_v2193.class, registry.resolve(ClientVariant.INTERNATIONAL, 2193));
+        assertEquals(2193, registry.getLatest(ClientVariant.INTERNATIONAL).getProtocolVersion());
         assertEquals(766, registry.getLowest(ClientVariant.NETEASE).getProtocolVersion());
         assertEquals(860, registry.getLatest(ClientVariant.NETEASE).getProtocolVersion());
     }
