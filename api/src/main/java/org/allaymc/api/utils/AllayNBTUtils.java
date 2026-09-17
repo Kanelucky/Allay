@@ -70,7 +70,25 @@ public final class AllayNBTUtils {
      */
     @SneakyThrows
     public static NbtMap base64ToNbt(String base64) {
-        return (NbtMap) org.cloudburstmc.nbt.NbtUtils.createReader(new ByteArrayInputStream(Base64.getDecoder().decode(base64))).readTag();
+        if (base64 == null || base64.isEmpty()) {
+            return NbtMap.EMPTY;
+        }
+        var bytes = Base64.getDecoder().decode(base64);
+        int offset = 0;
+        if (bytes.length >= 3 && (bytes[0] & 0xFF) == 0xFF && (bytes[1] & 0xFF) == 0xFF) {
+            offset = 3;
+        }
+        if (bytes.length <= offset) {
+            return NbtMap.EMPTY;
+        }
+        try {
+            return (NbtMap) org.cloudburstmc.nbt.NbtUtils.createReaderLE(
+                    new ByteArrayInputStream(bytes, offset, bytes.length - offset)
+            ).readTag();
+        } catch (Exception e) {
+            log.warn("Failed to parse NBT from base64 string: '{}'", base64, e);
+            return NbtMap.EMPTY;
+        }
     }
 
     /**

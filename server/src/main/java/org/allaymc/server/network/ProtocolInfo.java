@@ -9,7 +9,6 @@ import org.allaymc.updater.block.BlockStateUpdater_1_21_110;
 import org.allaymc.updater.item.ItemStateUpdater;
 import org.allaymc.updater.item.ItemStateUpdater_1_26_20;
 import org.cloudburstmc.protocol.bedrock.codec.BedrockCodec;
-import org.cloudburstmc.protocol.bedrock.codec.v1001.Bedrock_v1001;
 import org.cloudburstmc.protocol.bedrock.codec.v2193.Bedrock_v2193;
 import org.cloudburstmc.protocol.bedrock.codec.v818.Bedrock_v818;
 
@@ -24,7 +23,7 @@ public final class ProtocolInfo {
     /**
      * Feature version is the version of the game from which vanilla features will be used.
      */
-    public static final BedrockCodec FEATURE_VERSION = Bedrock_v1001.CODEC;
+    public static final BedrockCodec FEATURE_VERSION = Bedrock_v2193.CODEC;
 
     /**
      * Bedrock version of the most recent backwards-incompatible change to block states.
