@@ -19,6 +19,7 @@ Unless otherwise specified, any version comparison below is the comparison of th
 - Added support for MCBE 1.26.51 (protocol v2193), not including the lastest features
 - Implemented Decorated Pot drop
 - Implemented Skeleton, Allay, Fox, Creeper entity
+- Update feature version to 1.26.51 (protocol 21293)
 
 # 0.14.1 (API 0.30.0) - Unreleased
 

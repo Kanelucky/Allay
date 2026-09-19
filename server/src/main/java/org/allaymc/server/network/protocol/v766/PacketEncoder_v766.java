@@ -2602,7 +2602,7 @@ public class PacketEncoder_v766 extends PacketEncoder {
         packet.setSpawnBiomeType(SpawnBiomeType.DEFAULT);
         packet.setCustomBiomeName("plains");
         packet.setEducationProductionId("");
-        packet.setForceExperimentalGameplay(OptionalBoolean.empty());
+        packet.setForceExperimentalGameplay(OptionalBoolean.of(true));
         packet.setBlockNetworkIdsHashed(true);
         packet.setServerId("");
         packet.setWorldId("");

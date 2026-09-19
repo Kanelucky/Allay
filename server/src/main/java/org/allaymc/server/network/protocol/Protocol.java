@@ -35,6 +35,12 @@ import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.protocol.bedrock.codec.BedrockCodec;
 import org.cloudburstmc.protocol.bedrock.data.BlockPropertyData;
+import java.util.TreeMap;
+import java.io.UncheckedIOException;
+import java.io.IOException;
+import java.io.BufferedInputStream;
+import org.cloudburstmc.nbt.NbtUtils;
+import org.allaymc.api.utils.Utils;
 import org.cloudburstmc.protocol.bedrock.data.definitions.BlockDefinition;
 import org.cloudburstmc.protocol.bedrock.data.definitions.ItemDefinition;
 import org.cloudburstmc.protocol.bedrock.data.definitions.SimpleItemDefinition;
@@ -354,8 +360,28 @@ public abstract class Protocol {
      *
      * @return custom block properties ordered by block runtime ID
      */
+    /**
+     * Data-driven vanilla blocks this protocol must advertise, or {@code null} if it has none.
+     *
+     * <p>1.26.50 turned 98 vanilla blocks (wool/concrete stairs and slabs, the poplar set, ...) into data-driven
+     * blocks: the client only knows them when the server sends their definitions in {@code StartGamePacket}. Without
+     * them the blocks are invisible and their items fall back to a generic name such as {@code item.wool.slab}.</p>
+     */
+    protected String getDataDrivenBlocksResource() {
+        return null;
+    }
+
     protected List<BlockPropertyData> createCustomBlockProperties() {
         var properties = new ArrayList<BlockPropertyData>();
+        var dataDrivenBlocks = getDataDrivenBlocksResource();
+        if (dataDrivenBlocks != null) {
+            try (var reader = NbtUtils.createGZIPReader(new BufferedInputStream(Utils.getResource(dataDrivenBlocks)))) {
+                var definitions = (NbtMap) reader.readTag();
+                new TreeMap<>(definitions).forEach((name, definition) -> properties.add(new BlockPropertyData(name, (NbtMap) definition)));
+            } catch (IOException e) {
+                throw new UncheckedIOException("Cannot read " + dataDrivenBlocks, e);
+            }
+        }
         var blockTypes = Registries.BLOCKS.getContent().values().stream()
                 .map(blockType -> (AllayBlockType<?>) blockType)
                 .filter(blockType -> blockType.getCustomBlockDefinition() != null)

@@ -29,7 +29,13 @@ public final class RecipeJsonUtils {
         Objects.requireNonNull(itemType, "Unknown item type: " + itemId);
         var count = jsonObject.get("count").getAsInt();
         var meta = jsonObject.has("data") ? jsonObject.get("data").getAsInt() : 0;
-        var nbtMap = jsonObject.has("nbt") ? AllayNBTUtils.base64ToNbt(jsonObject.get("nbt").getAsString()) : NbtMap.EMPTY;
+        NbtMap nbtMap = NbtMap.EMPTY;
+        if (jsonObject.has("nbt")) {
+            var decoded = AllayNBTUtils.base64ToNbt(jsonObject.get("nbt").getAsString());
+            if (decoded != null) {
+                nbtMap = decoded;
+            }
+        }
         return itemType.createItemStack(
                 ItemStackInitInfo
                         .builder()
