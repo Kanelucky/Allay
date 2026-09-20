@@ -121,7 +121,9 @@ public class ItemStackInitInfo implements ComponentInitInfo {
         }
 
         public Builder extraTag(NbtMap extraTag) {
-            extraTagBuilder.putAll(extraTag);
+            if (extraTag != null) {
+                extraTagBuilder.putAll(extraTag);
+            }
             return this;
         }
 

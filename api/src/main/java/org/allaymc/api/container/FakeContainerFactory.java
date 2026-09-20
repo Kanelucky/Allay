@@ -29,4 +29,21 @@ public interface FakeContainerFactory {
      * @return A new double chest {@code FakeContainer} instance.
      */
     FakeContainer createFakeDoubleChestContainer();
+    /**
+     * Creates an instance of a hopper {@code FakeContainer}.
+     * A hopper container exposes exactly five slots, which suits compact menus
+     * that would otherwise waste most of a chest grid.
+     *
+     * @return A new hopper {@code FakeContainer} instance.
+     */
+    FakeContainer createFakeHopperContainer();
+
+    /**
+     * Creates an instance of a smithing table {@code FakeContainer}.
+     * A smithing table container allows opening a blockless smithing table UI
+     * for template upgrades and armor trims.
+     *
+     * @return A new smithing table {@code FakeContainer} instance.
+     */
+    FakeContainer createFakeSmithingTableContainer();
 }

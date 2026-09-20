@@ -1,16 +1,19 @@
 package org.allaymc.server.player;
 
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 import org.allaymc.api.player.Skin;
 import org.cloudburstmc.protocol.bedrock.data.skin.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
  * SkinConvertor is a utility class to convert between the API's Skin object and the protocol's SerializedSkin object.
  */
+@Slf4j
 @UtilityClass
 public final class SkinConvertor {
     /**
@@ -21,59 +24,36 @@ public final class SkinConvertor {
      */
     public static SerializedSkin toSerializedSkin(Skin skin) {
         // Convert ImageData for skin and cape
-        ImageData serializedSkinData = ImageData.of(
-                skin.skinData().width(), skin.skinData().height(), skin.skinData().data().clone());
+        ImageData serializedSkinData = ImageData.of(skin.skinData().width(), skin.skinData().height(), skin.skinData().data().clone());
 
-        ImageData serializedCapeData = ImageData.of(
-                skin.capeData().width(), skin.capeData().height(), skin.capeData().data().clone());
+        ImageData serializedCapeData = ImageData.of(skin.capeData().width(), skin.capeData().height(), skin.capeData().data().clone());
 
         // Convert list of animations
-        List<AnimationData> serializedAnimations = skin.animations().stream()
-                .map(SkinConvertor::convertAnimationToSerialized)
-                .collect(Collectors.toList());
+        List<AnimationData> serializedAnimations = skin.animations().stream().map(SkinConvertor::convertAnimationToSerialized).collect(Collectors.toList());
 
         // Convert list of persona pieces
-        List<PersonaPieceData> serializedPersonaPieces = skin.personaPieces().stream()
-                .map(piece -> new PersonaPieceData(
-                        piece.pieceId(),
-                        piece.pieceType(),
-                        piece.packId(),
-                        piece.isDefault(),
-                        piece.productId()
-                ))
-                .collect(Collectors.toList());
+        List<PersonaPieceData> serializedPersonaPieces = skin.personaPieces().stream().map(SkinConvertor::convertPersonaPiece).filter(Objects::nonNull).collect(Collectors.toList());
 
         // Convert list of persona piece tint colors
-        List<PersonaPieceTintData> serializedTintColors = skin.pieceTintColors().stream()
-                .map(tint -> new PersonaPieceTintData(
-                        tint.pieceType(),
-                        new ArrayList<>(tint.colors())
-                ))
-                .collect(Collectors.toList());
+        List<PersonaPieceTintData> serializedTintColors = skin.pieceTintColors().stream().map(tint -> new PersonaPieceTintData(tint.pieceType(), new ArrayList<>(tint.colors())))
+                                                              .collect(Collectors.toList());
 
         // Use the SerializedSkin builder to construct the final object
-        return SerializedSkin.builder()
-                .skinId(skin.skinId())
-                .playFabId(skin.playFabId())
-                .skinResourcePatch(skin.skinResourcePatch())
-                .skinData(serializedSkinData)
-                .animations(serializedAnimations)
-                .capeData(serializedCapeData)
-                .geometryData(skin.skinGeometry())
-                .geometryDataEngineVersion(skin.geometryDataEngineVersion())
-                .animationData(skin.animationData())
-                .premium(skin.premiumSkin())
-                .persona(skin.personaSkin())
-                .capeOnClassic(skin.personaCapeOnClassicSkin())
-                .primaryUser(skin.primaryUser())
-                .capeId(skin.capeId())
-                .fullSkinId(skin.fullId())
-                .armSize(skin.armSize())
-                .skinColor(skin.skinColor())
-                .personaPieces(serializedPersonaPieces)
-                .tintColors(serializedTintColors)
-                .overridingPlayerAppearance(skin.overrideAppearance())
-                .build();
+        return SerializedSkin
+                .builder().skinId(skin.skinId()).playFabId(skin.playFabId()).skinResourcePatch(skin.skinResourcePatch()).skinData(serializedSkinData).animations(serializedAnimations)
+                          .capeData(serializedCapeData).geometryData(skin.skinGeometry()).geometryDataEngineVersion(skin.geometryDataEngineVersion()).animationData(skin.animationData())
+                          .premium(skin.premiumSkin()).persona(skin.personaSkin()).capeOnClassic(skin.personaCapeOnClassicSkin()).primaryUser(skin.primaryUser()).capeId(skin.capeId())
+                          .fullSkinId(skin.fullId()).armSize(skin.armSize()).skinColor(skin.skinColor()).personaPieces(serializedPersonaPieces).tintColors(serializedTintColors)
+                          .overridingPlayerAppearance(skin.overrideAppearance()).build();
+    }
+
+    private static PersonaPieceData convertPersonaPiece(Skin.PersonaPieces piece) {
+        try {
+            return new PersonaPieceData(piece.pieceId(), piece.pieceType(), piece.packId(), piece.isDefault(), piece.productId());
+        } catch (IllegalArgumentException | NullPointerException exception) {
+            log.debug("Skipping unusable persona piece (type={}, packId={}): {}", piece.pieceType(), piece.packId(), exception.getMessage());
+            return null;
+        }
     }
 
     /**
@@ -84,41 +64,21 @@ public final class SkinConvertor {
      */
     public static Skin fromSerializedSkin(SerializedSkin serializedSkin) {
         // Convert ImageData for skin and cape
-        Skin.ImageData skinData = new Skin.ImageData(
-                serializedSkin.getSkinData().getWidth(),
-                serializedSkin.getSkinData().getHeight(),
-                serializedSkin.getSkinData().getImage().clone()
-        );
+        Skin.ImageData skinData = new Skin.ImageData(serializedSkin.getSkinData().getWidth(), serializedSkin.getSkinData().getHeight(), serializedSkin.getSkinData().getImage().clone());
 
-        Skin.ImageData capeData = new Skin.ImageData(
-                serializedSkin.getCapeData().getWidth(),
-                serializedSkin.getCapeData().getHeight(),
-                serializedSkin.getCapeData().getImage().clone()
-        );
+        Skin.ImageData capeData = new Skin.ImageData(serializedSkin.getCapeData().getWidth(), serializedSkin.getCapeData().getHeight(), serializedSkin.getCapeData().getImage().clone());
 
         // Convert list of animations
-        List<Skin.AnimationData> animations = serializedSkin.getAnimations().stream()
-                .map(SkinConvertor::convertAnimationFromSerialized)
-                .collect(Collectors.toList());
+        List<Skin.AnimationData> animations = serializedSkin.getAnimations().stream().map(SkinConvertor::convertAnimationFromSerialized).collect(Collectors.toList());
 
         // Convert list of persona pieces
         List<Skin.PersonaPieces> personaPieces = serializedSkin.getPersonaPieces().stream()
-                .map(piece -> new Skin.PersonaPieces(
-                        piece.id(),
-                        piece.type(),
-                        piece.packId(),
-                        piece.isDefault(),
-                        piece.productId()
-                ))
-                .collect(Collectors.toList());
+                                                               .map(piece -> new Skin.PersonaPieces(piece.id(), piece.type(), piece.packId(), piece.isDefault(), piece.productId()))
+                                                               .collect(Collectors.toList());
 
         // Convert list of persona piece tint colors
-        List<Skin.PersonaPieceTintColor> tintColors = serializedSkin.getTintColors().stream()
-                .map(tint -> new Skin.PersonaPieceTintColor(
-                        tint.type(),
-                        new ArrayList<>(tint.colors())
-                ))
-                .collect(Collectors.toList());
+        List<Skin.PersonaPieceTintColor> tintColors = serializedSkin.getTintColors().stream().map(tint -> new Skin.PersonaPieceTintColor(tint.type(), new ArrayList<>(tint.colors())))
+                                                                    .collect(Collectors.toList());
 
         // Construct the API Skin record
         return new Skin(
@@ -147,11 +107,7 @@ public final class SkinConvertor {
 
     private static AnimationData convertAnimationToSerialized(Skin.AnimationData data) {
         return new AnimationData(
-                ImageData.of(
-                        data.imageData().width(),
-                        data.imageData().height(),
-                        data.imageData().data().clone()
-                ),
+                ImageData.of(data.imageData().width(), data.imageData().height(), data.imageData().data().clone()),
                 convertAnimationType(data.animationType()),
                 data.frameCount(),
                 convertExpressionType(data.expressionType())
@@ -160,11 +116,7 @@ public final class SkinConvertor {
 
     private static Skin.AnimationData convertAnimationFromSerialized(AnimationData data) {
         return new Skin.AnimationData(
-                new Skin.ImageData(
-                        data.image().getWidth(),
-                        data.image().getHeight(),
-                        data.image().getImage().clone()
-                ),
+                new Skin.ImageData(data.image().getWidth(), data.image().getHeight(), data.image().getImage().clone()),
                 convertAnimationType(data.textureType()),
                 data.frames(),
                 convertExpressionType(data.expressionType())

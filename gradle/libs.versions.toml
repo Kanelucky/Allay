@@ -9,11 +9,11 @@ netty = "4.2.17.Final"
 # NBT
 nbt = { group = "org.allaymc", name = "nbt", version = "3.0.12" }
 # Protocol
-protocol = { group = "com.github.Kanelucky.Protocol", name = "bedrock-connection", version = "develop-SNAPSHOT" }
+protocol = { group = "com.github.Kanelucky.Protocol", name = "bedrock-connection", version = "ce1ef58348" }
 # State Updater
-updater-common = { group = "org.allaymc.stateupdater", name = "common", version = "0.1.1" }
-item-updater = { group = "org.allaymc.stateupdater", name = "item-updater", version = "1.26.20-R1" }
-block-updater = { group = "org.allaymc.stateupdater", name = "block-updater", version = "1.21.110-R1" }
+updater-common = { group = "com.github.Kanelucky.StateUpdater", name = "common", version = "09dc0f4e5f" }
+item-updater = { group = "com.github.Kanelucky.StateUpdater", name = "item-updater", version = "09dc0f4e5f" }
+block-updater = { group = "com.github.Kanelucky.StateUpdater", name = "block-updater", version = "09dc0f4e5f" }
 # Collections
 guava = { group = "com.google.guava", name = "guava", version = "33.7.1-jre" }
 # Fastutil
