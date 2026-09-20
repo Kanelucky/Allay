@@ -49,14 +49,6 @@ public class SmithingTransformRecipe extends SmithingRecipe {
         return result;
     }
 
-    /**
-     * Taban eşyadan çıktı eşyasına vanilla yükseltme özniteliklerini kopyalar:
-     * büyüler, özel ad, lore, hasar (çıktının azami hasarıyla sınırlanmış) ve zırh süsü.
-     *
-     * @param base   taban eşya
-     * @param output kopyalanmış çıktı eşyası
-     * @return güncellenmiş çıktı eşyası
-     */
     public static ItemStack applyDefaultTransformation(ItemStack base, ItemStack output) {
         if (base == null || output == null) {
             return output;
