@@ -661,8 +661,8 @@ public class AllayPlayer implements Player {
     @SneakyThrows
     protected void sendContainerOpenPacket(byte assignedId, Container container) {
         Vector3ic position = switch (container) {
-            case BlockContainer blockContainer -> blockContainer.getBlockPos();
             case FakeContainerImpl fakeContainer -> fakeContainer.getFakeBlockPos(this);
+            case BlockContainer blockContainer -> blockContainer.getBlockPos();
             default -> {
                 var location = this.controlledEntity.getLocation();
                 yield new org.joml.Vector3i(
