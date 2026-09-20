@@ -9,7 +9,7 @@ netty = "4.2.17.Final"
 # NBT
 nbt = { group = "org.allaymc", name = "nbt", version = "3.0.12" }
 # Protocol
-protocol = { group = "com.github.Kanelucky.Protocol", name = "bedrock-connection", version = "2624cc0d02" }
+protocol = { group = "com.github.Kanelucky.Protocol", name = "bedrock-connection", version = "ce1ef58348" }
 # State Updater
 updater-common = { group = "com.github.Kanelucky.StateUpdater", name = "common", version = "09dc0f4e5f" }
 item-updater = { group = "com.github.Kanelucky.StateUpdater", name = "item-updater", version = "09dc0f4e5f" }

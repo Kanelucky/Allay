@@ -22,8 +22,7 @@ public class Protocol_v2193 extends Protocol_v2169 {
 
     @Override
     protected String getDataDrivenBlocksResource() {
-        // 1.26.50 data-driven vanilla blocks (wool/concrete stairs and slabs, poplar set); source: CloudburstMC/Data.
-        return "data_driven_blocks_1_26_50.nbt";
+        return "data_driven_blocks.nbt";
     }
 
     @Override

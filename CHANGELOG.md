@@ -14,11 +14,13 @@ Unless otherwise specified, any version comparison below is the comparison of th
 
 - (API) Added support for custom game modes (`GameMode`). Use `GameMode.builder()` to create a custom game mode.
 - (API) Added `PlayerDeathEvent`
+- (API) `BlockPropertyTypes.GROWTH` was split into `GROWTH_8` (crops, sweet berries) and `GROWTH_2` (`minecraft:shelf_mushroom`).
 - Added support for MCBE 1.26.45 (protocol v2169), not including the lastest features
 - Added support for MCBE 1.26.50 (protocol v2192), not including the lastest features
 - Added support for MCBE 1.26.51 (protocol v2193), not including the lastest features
 - Implemented Decorated Pot drop
 - Implemented Skeleton, Allay, Fox, Creeper entity
+- 1.26.50 clients receive the definitions of the data-driven vanilla blocks in `StartGamePacket`
 - Update feature version to 1.26.51 (protocol 21293)
 
 # 0.14.1 (API 0.30.0) - Unreleased
