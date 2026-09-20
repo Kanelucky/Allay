@@ -122,7 +122,7 @@ class ProtocolInheritanceTest {
                 new Protocol_v2169(),
                 new Protocol_v2193()
         );
-        var expectedVersions = List.of(818, 819, 827, 844, 859, 860, 898, 924, 944, 975, 1001, 2168, 2169, 2192, 2193);
+        var expectedVersions = List.of(818, 819, 827, 844, 859, 860, 898, 924, 944, 975, 1001, 2168, 2169, 2193);
 
         for (int index = 0; index < international.size(); index++) {
             var protocol = international.get(index);

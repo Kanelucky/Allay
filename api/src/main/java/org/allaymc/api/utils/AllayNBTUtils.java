@@ -70,6 +70,21 @@ public final class AllayNBTUtils {
      */
     @SneakyThrows
     public static NbtMap base64ToNbt(String base64) {
+        return (NbtMap) org.cloudburstmc.nbt.NbtUtils.createReader(new ByteArrayInputStream(Base64.getDecoder().decode(base64))).readTag();
+    }
+
+    /**
+     * Convert Base64 to NBT, for Bedrock item NBT payloads (e.g. recipe output "nbt" field).
+     * <p>
+     * This format is little-endian and is sometimes prefixed with a 3-byte header
+     * (0xFF 0xFF + 1 version byte) before the actual NBT payload. This method strips
+     * that header if present.
+     *
+     * @param base64 the Base64 string
+     * @return the NBT map, or {@link NbtMap#EMPTY} if the input is null, empty, or cannot be parsed
+     */
+    @SneakyThrows
+    public static NbtMap base64ToBedrockItemNbt(String base64) {
         if (base64 == null || base64.isEmpty()) {
             return NbtMap.EMPTY;
         }
@@ -86,7 +101,7 @@ public final class AllayNBTUtils {
                     new ByteArrayInputStream(bytes, offset, bytes.length - offset)
             ).readTag();
         } catch (Exception e) {
-            log.warn("Failed to parse NBT from base64 string: '{}'", base64, e);
+            log.warn("Failed to parse Bedrock item NBT from base64 string: '{}'", base64, e);
             return NbtMap.EMPTY;
         }
     }
