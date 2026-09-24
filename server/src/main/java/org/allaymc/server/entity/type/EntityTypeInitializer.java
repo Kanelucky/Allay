@@ -5,6 +5,7 @@ import org.allaymc.api.block.type.BlockTypes;
 import org.allaymc.api.entity.ai.memory.MemoryTypes;
 import org.allaymc.api.entity.component.EntityBabyComponent;
 import org.allaymc.api.entity.component.EntityLivingComponent;
+import org.allaymc.api.entity.component.EntityPhysicsComponent;
 import org.allaymc.api.entity.damage.DamageContainer;
 import org.allaymc.api.entity.damage.DamageType;
 import org.allaymc.api.entity.interfaces.*;
@@ -215,7 +216,7 @@ public final class EntityTypeInitializer {
                     var behaviorGroup = BehaviorGroupImpl.builder()
                             .sensor(new NearestPlayerSensor(40, 0, 20))
                             .behavior(BehaviorImpl.builder()
-                                    .executor(new MeleeAttackExecutor(MemoryTypes.ATTACK_TARGET, 0.1f, 40, true, 30, Math.sqrt(2.5), true))
+                                    .executor(new MeleeAttackExecutor(MemoryTypes.ATTACK_TARGET, 0.1f, 40, true, 30, Math.sqrt(2.5), true, 0))
                                     .evaluator(all(
                                             new MemoryCheckNotEmptyEvaluator(MemoryTypes.ATTACK_TARGET),
                                             entity -> isValidTarget(entity, entity.getMemoryStorage().get(MemoryTypes.ATTACK_TARGET))
@@ -223,7 +224,7 @@ public final class EntityTypeInitializer {
                                     .priority(3)
                                     .build())
                             .behavior(BehaviorImpl.builder()
-                                    .executor(new MeleeAttackExecutor(MemoryTypes.NEAREST_PLAYER, 0.1f, 40, false,30, Math.sqrt(2.5), true))
+                                    .executor(new MeleeAttackExecutor(MemoryTypes.NEAREST_PLAYER, 0.1f, 40, false,30, Math.sqrt(2.5), true, 0))
                                     .evaluator(all(
                                             new MemoryCheckNotEmptyEvaluator(MemoryTypes.NEAREST_PLAYER),
                                             entity -> isValidTarget(entity, entity.getMemoryStorage().get(MemoryTypes.NEAREST_PLAYER))
@@ -1156,6 +1157,41 @@ public final class EntityTypeInitializer {
                             return new EntityAIComponentImpl(behaviorGroup);
                         },
                         EntityAIComponentImpl.class)
+                .build();
+    }
+
+    public static void initIronGolem() {
+        EntityTypes.IRON_GOLEM = AllayEntityType
+                .builder(EntityIronGolemImpl.class)
+                .vanillaEntity(EntityId.IRON_GOLEM)
+                .addComponent(EntityIronGolemBaseComponentImpl::new, EntityIronGolemBaseComponentImpl.class)
+                .addComponent(EntityIronGolemLivingComponentImpl::new, EntityIronGolemLivingComponentImpl.class)
+                .addComponent(EntityPhysicsComponentImpl::new, EntityPhysicsComponentImpl.class)
+                .addComponent(EntityHeadYawComponentImpl::new, EntityHeadYawComponentImpl.class)
+                .addComponent(EntityParallelTickComponentImpl::new, EntityParallelTickComponentImpl.class)
+                .addComponent(() -> {
+                    var behaviorGroup = BehaviorGroupImpl.builder()
+                            .sensor(new NearestPlayerSensor(16, 0, 20))
+                            .behavior(BehaviorImpl.builder()
+                                    .executor(new MeleeAttackExecutor(MemoryTypes.ATTACK_TARGET, 0.12f, 40, true, 20, Math.sqrt(2.5), false, 17f))
+                                    .evaluator(all(
+                                            new MemoryCheckNotEmptyEvaluator(MemoryTypes.ATTACK_TARGET),
+                                            entity -> isValidTarget(entity, entity.getMemoryStorage().get(MemoryTypes.ATTACK_TARGET))
+                                    ))
+                                    .priority(2)
+                                    .build())
+                            .behavior(BehaviorImpl.builder()
+                                    .executor(new FlatRandomRoamExecutor(0.1f, 12, 100, false, -1, true, 10))
+                                    .evaluator(entity -> true)
+                                    .priority(1)
+                                    .build())
+                            .controller(new WalkController())
+                            .controller(new FluctuateController())
+                            .controller(new LookController(true, true))
+                            .routeFinder(new FlatAStarRouteFinder(new WalkingPosEvaluator()))
+                            .build();
+                    return new EntityAIComponentImpl(behaviorGroup);
+                }, EntityAIComponentImpl.class)
                 .build();
     }
 
