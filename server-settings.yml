@@ -1,0 +1,156 @@
+generic-settings:
+  motd: An allay-powered server
+  # Usually only visible on the LAN interface
+  sub-motd: https://github.com/AllayMC/Allay
+  max-player-count: 20
+  # Determines the default game mode of a world when it is created
+  # Possible values: SURVIVAL, CREATIVE, ADVENTURE, SPECTATOR
+  default-game-mode: CREATIVE
+  # Determines the default difficulty of a world when it is created
+  # Possible values: PEACEFUL, EASY, NORMAL, HARD
+  default-difficulty: NORMAL
+  # Possible values: VISITOR, MEMBER, OPERATOR
+  default-permission: MEMBER
+  # The language used by console
+  language: en_US
+  # If debug mode is enabled, the console will output more detailed information
+  debug: false
+  # If whitelist is enabled, only players in the whitelist can join the server
+  enable-whitelist: false
+  enable-gui: true
+  # Decide the maximum count of threads in compute thread pool
+  # If the value <= 0, the count will be same to the count of available processors
+  max-compute-thread-count: 0
+  # Sentry is an error tracking and performance monitoring platform, which is disabled by
+  # default in development build, however you can force turn it on by setting this to true
+  force-enable-sentry: false
+network-settings:
+  # The IPv4 address of this server
+  ip: 0.0.0.0
+  # The IPv4 port of this server
+  port: 19132
+  # Whether IPv6 is enabled
+  enablev6: true
+  # The IPv6 address of this server. Works only when enablev6 is true
+  ipv6: '::'
+  # The IPv6 port of this server. Works only when enablev6 is true
+  portv6: 19133
+  xbox-auth: true
+  # Turning this on is highly recommended for security reasons
+  enable-network-encryption: true
+  # Log detailed packet information for each player session
+  debug-packets: false
+  # The compression algorithm used for network data streams. Possible values: ZLIB, SNAPPY
+  # ZLIB has better compression ratios and SNAPPY has better compression performance
+  compression-algorithm: ZLIB
+  # The number of network threads. If put zero here, the server will automatically determine the number of network threads
+  network-thread-number: 0
+  # The maximum number of packets that can be processed at once
+  max-synced-packets-handle-count-once: 128
+  # The maximum number of datagram packets each address can send within one RakNet tick (10ms)
+  # Default value is 120 packets, and will be Integer.MAX_VALUE if the server is running in dev mode
+  raknet-packet-limit: 120
+  # A number of all datagrams that will be handled within one RakNet tick before server starts dropping any incoming data
+  # Default value is 100000 (raknetPacketLimit * 0.56 * 1500 different connections), and will be Integer.MAX_VALUE if the server is running in dev mode
+  raknet-global-packet-limit: 100000
+  # Maximum allowed MTU that the RakNet server connection can use
+  # The internet supports a maximum MTU of 1492 but could cause issues with packet fragmentation.
+  # Default value is 1400
+  raknet-max-mtu: 1400
+  # The max time (unit: gt) that a client can have in login stage
+  # This would prevent the server from being stuck by a lot
+  # of fake clients that are keep in login stage maliciously
+  # To disable it, just make the value <= 0
+  max-login-time: 1800
+  # Encoding protection will prevent client from sending large garbage data
+  # It is recommended to enable this feature, however if clients are kicked due
+  # to misjudgment (usually when changing skin), disable this feature will help you
+  enable-encoding-protection: true
+  # Enable support for NetEase (China) Minecraft clients
+  netease-client-support: false
+  # If set to true, only NetEase clients can join the server
+  # This option only takes effect when netease-client-support is enabled
+  only-allow-netease-client: false
+  # Maximum size in bytes for decompressed packet data. Default is 50MB (52428800)
+  # Increase this if you encounter decompression errors with large packets
+  max-decompressed-bytes: 52428800
+  # Whether to enable client-side chunk caching using blob hashes, which can significantly reduce bandwidth when players revisit areas
+  # Please note that you should set network-settings.enable-encoding-protection to false to use this feature
+  enable-client-chunk-cache: false
+  # Maximum number of chunk blobs to cache globally across all players
+  # Each blob is typically 1-4KB. Higher values use more memory but improve cache hit rate
+  # Recommended: 4096 for small servers, 8192-16384 for larger servers
+  max-chunk-cache-blobs: 4096
+world-settings:
+  # Determines how far away from the chunk loader chunks will be ticked
+  tick-radius: 4
+  # Determines how far away from the chunk loader chunks will be loaded and sent
+  view-distance: 8
+  # Determines the maximum number of chunks that can be sent during a tick (per chunk loader)
+  chunk-max-send-count-per-tick: 16
+  use-sub-chunk-sending-system: false
+  # Possible values: ASYNC, SYNC
+  chunk-sending-strategy: ASYNC
+  # Determines the minimum number of chunks that must be sent to the client which is joining the server
+  # Decrease this value may reduce the time on joining server. However, client may see a lot of unloaded chunks if the value is too low
+  fully-join-chunk-threshold: 30
+  # Determines how long a chunk without chunk loaders will remain loaded (gt)
+  remove-unused-full-chunk-cycle: 1200
+  # Determines how long a proto chunk will remain in memory (gt)
+  remove-unused-proto-chunk-cycle: 600
+  # If set to true, the server will load chunks around the spawn point
+  # Which will reduce the time on joining server
+  # However, this will increase the server's memory usage
+  load-spawn-point-chunks: true
+  # Determines how many chunks around the spawn point will be loaded
+  spawn-point-chunk-radius: 3
+  # If set to true, dimensions in the same world will be ticked in parallel during world tick
+  tick-dimension-in-parallel: true
+  # Indicate the max light update count per dimension, if the count is exceeded, light in
+  # newly loaded chunks won't be calculated immediately to avoid taking too much memory
+  max-light-update-count: 1280000
+entity-settings:
+  # Entity physics engine settings
+  # Do not change them if you don't know what you are doing!
+  physics-engine-settings:
+    # When the motion falls below this value, its motion is zeroed
+    motion-threshold: 0.003
+    # This usually determines how quickly an entity item is moved when getting stuck in a block
+    block-collision-motion: 0.2
+storage-settings:
+  # If set to false, the player's data will not be saved
+  save-player-data: true
+  # Determines the cycle of player data auto saving
+  player-data-auto-save-cycle: 6000
+  # Determines the cycle of chunk auto saving
+  chunk-auto-save-cycle: 6000
+  # Determines the cycle of entity auto saving. When entity auto saving is triggered, the
+  # entity manager will find all savable entities in unloaded chunks and save them
+  entity-auto-save-cycle: 1200
+resource-pack-settings:
+  # If set to true, packs will be automatically encrypted
+  # Notes that Vibrant Visuals will be disabled if this is set to true
+  auto-encrypt-packs: true
+  # The maximum size of a resource pack chunk (unit: KB)
+  # Decrease this value may reduce the pressure on the network when sending packs to multiple clients
+  # However, it may also increase the time it takes to send the packs
+  max-chunk-size: 100
+  # true - the player must accept resource packs, otherwise he will not log in to the server
+  # false - the player can log in to the server without accepting resource packs
+  force-resource-packs: false
+  # If set to true, the client resource packs will be allowed
+  allow-client-resource-packs: false
+  # If set to true, all skins will be marked as trusted
+  trust-all-skins: true
+  # If set to true, Vibrant Visuals will be disabled
+  disable-vibrant-visuals: false
+bstats-settings:
+  # bStats (https://bStats.org) collects some basic information for plugin authors, like how
+  # many people use their plugin and their total player count. It's recommended to keep bStats
+  # enabled, but if you're not comfortable with this, you can turn this setting off. There is no
+  # performance penalty associated with having metrics enabled, and data sent to bStats is fully anonymous.
+  enable: true
+  server-uuid: a1b098b4-afdf-45b2-a616-54d161d8f03f
+  log-failed-requests: false
+  log-sent-data: false
+  log-response-status-text: false

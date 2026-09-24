@@ -1,0 +1,4 @@
+# Banned player list. The value can be player's name or uuid
+banned-players: []
+# Banned ip list
+banned-ips: []
