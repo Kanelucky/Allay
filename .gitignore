@@ -43,3 +43,19 @@
 /server/operators.yml
 /server/server-settings.yml
 /server/whitelist.yml
+
+# Files due to running Allay.java directly
+caches
+command_data
+extensions
+logs
+players
+plugins
+resource_packs
+worlds
+ban-info.yml
+biome-ids.yml
+dimension-ids.yml
+operators.yml
+server-settings.yml
+whitelist.yml
