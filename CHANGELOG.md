@@ -19,7 +19,7 @@ Unless otherwise specified, any version comparison below is the comparison of th
 - Added support for MCBE 1.26.50 (protocol v2192), not including the lastest features
 - Added support for MCBE 1.26.51 (protocol v2193), not including the lastest features
 - Implemented Decorated Pot drop
-- Implemented Skeleton, Allay, Fox, Creeper entity
+- Implemented Skeleton, Allay, Fox, Creeper, Golem entity
 - 1.26.50 clients receive the definitions of the data-driven vanilla blocks in `StartGamePacket`
 - Update feature version to 1.26.51 (protocol 21293)
 
