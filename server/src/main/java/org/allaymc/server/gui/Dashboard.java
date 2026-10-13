@@ -297,10 +297,8 @@ public final class Dashboard {
             layout = consoleAppender.getLayout();
         }
         if (layout == null) {
-            layout = PatternLayout.newBuilder()
-                    .withConfiguration(log4jConfig)
-                    .withPattern(LOG_PATTERN)
-                    .build();
+            layout = PatternLayout.newBuilder().setConfiguration(log4jConfig).setPattern(LOG_PATTERN)
+                                  .build();
         }
 
         var appender = new DashboardLogAppender(LOG_APPENDER_NAME, layout, this);
