@@ -1,12 +1,10 @@
-package org.allaymc.server.entity.component;
+package org.allaymc.server.entity.component.hostile;
 
-import org.allaymc.api.entity.Entity;
 import org.allaymc.api.entity.ai.memory.MemoryTypes;
 import org.allaymc.api.entity.component.EntityAIComponent;
 import org.allaymc.api.entity.component.EntityBabyComponent;
 import org.allaymc.api.entity.component.EntityLivingComponent;
 import org.allaymc.api.entity.damage.DamageContainer;
-import org.allaymc.api.entity.interfaces.EntityProjectile;
 import org.allaymc.api.item.ItemStack;
 import org.allaymc.api.item.type.ItemTypes;
 import org.allaymc.server.component.annotation.Dependency;
@@ -18,10 +16,11 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * Living component implementation for zombies.
  */
-public class EntityZombieLivingComponentImpl extends EntityLivingComponentImpl {
+public class EntityZombieLivingComponentImpl extends EntityHostileLivingComponentImpl {
 
     @Dependency
     protected EntityAIComponent aiComponent;
+
     @Dependency
     protected EntityBabyComponent babyComponent;
 
@@ -36,20 +35,15 @@ public class EntityZombieLivingComponentImpl extends EntityLivingComponentImpl {
         }
 
         var attacker = resolveAttacker(damage.getAttacker());
-        if (attacker == null || attacker == thisEntity || !attacker.isAlive() || !(attacker instanceof EntityLivingComponent)) {
+        if (attacker == null
+                || attacker == thisEntity
+                || !attacker.isAlive()
+                || !(attacker instanceof EntityLivingComponent)) {
             return true;
         }
 
         aiComponent.getMemoryStorage().put(MemoryTypes.ATTACK_TARGET, attacker.getRuntimeId());
         return true;
-    }
-
-    protected Entity resolveAttacker(Object attacker) {
-        if (attacker instanceof EntityProjectile projectile) {
-            return projectile.getShooter();
-        }
-
-        return attacker instanceof Entity entity ? entity : null;
     }
 
     @Override
@@ -67,8 +61,7 @@ public class EntityZombieLivingComponentImpl extends EntityLivingComponentImpl {
                 case 0 -> drops.add(ItemTypes.IRON_INGOT.createItemStack());
                 case 1 -> drops.add(ItemTypes.CARROT.createItemStack());
                 case 2 -> drops.add(ItemTypes.POTATO.createItemStack());
-                default -> {
-                }
+                default -> {}
             }
         }
 

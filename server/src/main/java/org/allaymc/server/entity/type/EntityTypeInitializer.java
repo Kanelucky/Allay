@@ -5,7 +5,6 @@ import org.allaymc.api.block.type.BlockTypes;
 import org.allaymc.api.entity.ai.memory.MemoryTypes;
 import org.allaymc.api.entity.component.EntityBabyComponent;
 import org.allaymc.api.entity.component.EntityLivingComponent;
-import org.allaymc.api.entity.component.EntityPhysicsComponent;
 import org.allaymc.api.entity.damage.DamageContainer;
 import org.allaymc.api.entity.damage.DamageType;
 import org.allaymc.api.entity.interfaces.*;
@@ -32,6 +31,7 @@ import org.allaymc.server.entity.ai.sensor.NearestItemSensor;
 import org.allaymc.server.entity.ai.sensor.NearestPlayerSensor;
 import org.allaymc.server.entity.component.*;
 import org.allaymc.server.entity.component.animal.*;
+import org.allaymc.server.entity.component.hostile.*;
 import org.allaymc.server.entity.component.humanlike.EntityHumanLikeBaseComponentImpl;
 import org.allaymc.server.entity.component.humanlike.EntityHumanLikeContainerHolderComponentImpl;
 import org.allaymc.server.entity.component.humanlike.EntityHumanPhysicsComponentImpl;
@@ -1190,6 +1190,54 @@ public final class EntityTypeInitializer {
                             .controller(new LookController(true, true))
                             .routeFinder(new FlatAStarRouteFinder(new WalkingPosEvaluator()))
                             .build();
+                    return new EntityAIComponentImpl(behaviorGroup);
+                }, EntityAIComponentImpl.class)
+                .build();
+    }
+
+    public static void initWitch() {
+        EntityTypes.WITCH = AllayEntityType
+                .builder(EntityWitchImpl.class)
+                .vanillaEntity(EntityId.WITCH)
+                .addComponent(EntityWitchBaseComponentImpl::new, EntityWitchBaseComponentImpl.class)
+                .addComponent(EntityWitchLivingComponentImpl::new, EntityWitchLivingComponentImpl.class)
+                .addComponent(EntityHumanPhysicsComponentImpl::new, EntityHumanPhysicsComponentImpl.class)
+                .addComponent(EntityHeadYawComponentImpl::new, EntityHeadYawComponentImpl.class)
+                .addComponent(EntityParallelTickComponentImpl::new, EntityParallelTickComponentImpl.class)
+                .addComponent(() -> {
+                    var behaviorGroup = BehaviorGroupImpl.builder()
+                            .sensor(new NearestPlayerSensor(16, 0, 20))
+                            .behavior(BehaviorImpl.builder()
+                                    .executor(new PotionAttackExecutor(
+                                            MemoryTypes.ATTACK_TARGET, 0.11f, 32,
+                                            8, 3, true, 60))
+                                    .evaluator(all(
+                                            new MemoryCheckNotEmptyEvaluator(MemoryTypes.ATTACK_TARGET),
+                                            entity -> isValidTarget(entity, entity.getMemoryStorage().get(MemoryTypes.ATTACK_TARGET))
+                                    ))
+                                    .priority(3)
+                                    .build())
+                            .behavior(BehaviorImpl.builder()
+                                    .executor(new PotionAttackExecutor(
+                                            MemoryTypes.NEAREST_PLAYER, 0.11f, 32,
+                                            8, 3, false, 60))
+                                    .evaluator(all(
+                                            new MemoryCheckNotEmptyEvaluator(MemoryTypes.NEAREST_PLAYER),
+                                            entity -> isValidTarget(entity, entity.getMemoryStorage().get(MemoryTypes.NEAREST_PLAYER))
+                                    ))
+                                    .priority(2)
+                                    .build())
+                            .behavior(BehaviorImpl.builder()
+                                    .executor(new FlatRandomRoamExecutor(0.1f, 12, 100, false, -1, true, 10))
+                                    .evaluator(entity -> true)
+                                    .priority(1)
+                                    .build())
+                            .controller(new WalkController())
+                            .controller(new FluctuateController())
+                            .controller(new LookController(true, true))
+                            .routeFinder(new FlatAStarRouteFinder(new WalkingPosEvaluator()))
+                            .build();
+
                     return new EntityAIComponentImpl(behaviorGroup);
                 }, EntityAIComponentImpl.class)
                 .build();

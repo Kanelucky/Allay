@@ -1,13 +1,14 @@
-package org.allaymc.server.entity.component;
+package org.allaymc.server.entity.component.hostile;
 
 import org.allaymc.api.item.ItemStack;
 import org.allaymc.api.item.type.ItemTypes;
+import org.allaymc.server.entity.component.EntityLivingComponentImpl;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class EntityCreeperLivingComponentImpl extends EntityLivingComponentImpl {
+public class EntityCreeperLivingComponentImpl extends EntityHostileLivingComponentImpl {
 
     public EntityCreeperLivingComponentImpl() {
         setMaxHealth(20);

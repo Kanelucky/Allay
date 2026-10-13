@@ -1,11 +1,9 @@
-package org.allaymc.server.entity.component;
+package org.allaymc.server.entity.component.hostile;
 
-import org.allaymc.api.entity.Entity;
 import org.allaymc.api.entity.ai.memory.MemoryTypes;
 import org.allaymc.api.entity.component.EntityAIComponent;
 import org.allaymc.api.entity.component.EntityLivingComponent;
 import org.allaymc.api.entity.damage.DamageContainer;
-import org.allaymc.api.entity.interfaces.EntityProjectile;
 import org.allaymc.api.item.ItemStack;
 import org.allaymc.api.item.type.ItemTypes;
 import org.allaymc.server.component.annotation.Dependency;
@@ -17,7 +15,7 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * Living component implementation for skeletons.
  */
-public class EntitySkeletonLivingComponentImpl extends EntityLivingComponentImpl {
+public class EntitySkeletonLivingComponentImpl extends EntityHostileLivingComponentImpl {
 
     @Dependency
     protected EntityAIComponent aiComponent;
@@ -40,13 +38,6 @@ public class EntitySkeletonLivingComponentImpl extends EntityLivingComponentImpl
         }
         aiComponent.getMemoryStorage().put(MemoryTypes.ATTACK_TARGET, attacker.getRuntimeId());
         return true;
-    }
-
-    protected Entity resolveAttacker(Object attacker) {
-        if (attacker instanceof EntityProjectile projectile) {
-            return projectile.getShooter();
-        }
-        return attacker instanceof Entity entity ? entity : null;
     }
 
     @Override

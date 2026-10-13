@@ -1,8 +1,9 @@
-package org.allaymc.server.entity.component;
+package org.allaymc.server.entity.component.hostile;
 
 import lombok.Getter;
 import org.allaymc.api.entity.EntityInitInfo;
 import org.allaymc.api.entity.component.EntityCreeperBaseComponent;
+import org.allaymc.server.entity.component.EntityBaseComponentImpl;
 import org.cloudburstmc.nbt.NbtMap;
 import org.joml.primitives.AABBd;
 import org.joml.primitives.AABBdc;

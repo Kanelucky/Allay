@@ -1,8 +1,9 @@
-package org.allaymc.server.entity.component;
+package org.allaymc.server.entity.component.animal;
 
 import org.allaymc.api.entity.EntityInitInfo;
 import org.allaymc.api.entity.component.EntityAIComponent;
 import org.allaymc.server.component.annotation.Dependency;
+import org.allaymc.server.entity.component.EntityBaseComponentImpl;
 import org.joml.primitives.AABBd;
 import org.joml.primitives.AABBdc;
 

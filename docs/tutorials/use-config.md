@@ -5,7 +5,7 @@ comments: true
 # Use Config
 
 Allay provides a flexible configuration file handler that supports multiple formats. This tutorial will show you how
-to use the `Config` class to manage configuration files in your plugins.
+to use the `Setting` class to manage configuration files in your plugins.
 
 ## Supported Formats
 

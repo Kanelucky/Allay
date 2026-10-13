@@ -1,9 +1,15 @@
 package org.allaymc.server.network.protocol.v2168;
 
+import org.allaymc.api.entity.interfaces.EntityPlayer;
+import org.allaymc.api.player.Player;
 import org.allaymc.server.network.protocol.ProtocolData;
 import org.allaymc.server.network.protocol.v1001.PacketEncoder_v1001;
 import org.cloudburstmc.protocol.bedrock.data.inventory.crafting.recipe.*;
+import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
 import org.cloudburstmc.protocol.bedrock.packet.CraftingDataPacket;
+import org.cloudburstmc.protocol.bedrock.packet.PlayerListPacket;
+
+import java.util.Collection;
 
 /**
  * Packet encoder for protocol v2168.
@@ -36,6 +42,38 @@ public class PacketEncoder_v2168 extends PacketEncoder_v1001 {
             }
         }
         packet.getCraftingData().clear();
+        return packet;
+    }
+
+    @Override
+    public PlayerListPacket encodePlayerList(
+            Collection<? extends Player> players,
+            boolean add,
+            boolean trustSkins
+    ) {
+        return stampEntryActions(super.encodePlayerList(players, add, trustSkins));
+    }
+
+    @Override
+    public Collection<BedrockPacket> encodePlayerSkin(EntityPlayer player, boolean trustSkin) {
+        var packets = super.encodePlayerSkin(player, trustSkin);
+        for (var packet : packets) {
+            if (packet instanceof PlayerListPacket listPacket) {
+                stampEntryActions(listPacket);
+            }
+        }
+        return packets;
+    }
+
+    private static PlayerListPacket stampEntryActions(PlayerListPacket packet) {
+        if (packet == null) {
+            return null;
+        }
+        for (var entry : packet.getEntries()) {
+            if (entry.getAction() == null) {
+                entry.setAction(packet.getAction());
+            }
+        }
         return packet;
     }
 }
